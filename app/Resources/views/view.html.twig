@@ -1,0 +1,33 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ trick.name }}{% endblock title%}
+
+{% block body %}
+<div class="content">
+	<div class="coverImage">
+		<img src="{{ asset('img/card.jpg') }}" alt="{{ trick.name }}" />
+		<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+			<div class="btn-group" role="group">
+				<a class="btn btn-outline-dark" href="#"><i class="fa fa-pencil-square-o fa-fw"></i></a>
+				<a class="btn btn-outline-dark" href="#"><i class="fa fa-trash fa-fw"></i></a>
+			</div>
+		</div>
+	</div>
+
+	<div class="card mt-5">
+		<div class="card-header">
+			<h1>{{ trick.name|upper }}</h1>
+		</div>
+		<div class="card-body">
+			{% if trick.updatedAt is empty %}
+				<p><em><i class="fa fa-clock-o fa-fw"></i> Publié le {{ trick.publishedAt|date("d F Y", "Europe/Paris") }}</em></p>
+			{% else %}
+				<p><em><i class="fa fa-clock-o fa-fw"></i> Dernière modification le {{ trick.updatedAt|date("d F Y", "Europe/Paris") }}</em></p>
+			{% endif %}
+
+			<h2>Description :</h2>
+			<p>{{ trick.description }}</p>
+		</div>
+	</div>
+</div>
+{% endblock body %}

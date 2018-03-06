@@ -1,3 +1,9 @@
 snowtricks_home:
     path:   /
     defaults: { _controller: SnowtricksPlatformBundle:Trick:index }
+
+snowtricks_view:
+    path:   /{slug}
+    defaults: { _controller: SnowtricksPlatformBundle:Trick:show }
+    requirements:
+        slug: '.+'
