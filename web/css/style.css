@@ -1,0 +1,83 @@
+body
+{
+	font-family: 'PT Sans';
+}
+
+.name
+{
+	font-family: 'Nova Mono', Arial;
+	font-size: 2em;
+}
+
+header
+{
+	position: absolute;
+	background: transparent;
+	width: 100%;
+}
+
+#navbarToggler
+{
+	position: absolute;
+	right: 50px;
+}
+
+.backgroundImage
+{
+    margin:0;
+    padding:0;
+    background: url('../../web/img/background.jpg') no-repeat center;
+    height: 700px;
+    -webkit-background-size: cover; /* pour anciens Chrome et Safari */
+    background-size: cover; /* version standardisée */
+    color: black;
+    font-size: 20px;
+}
+
+.btn.allTricks
+{
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	right: 40px;
+	bottom: 50px;
+	padding: 8px;
+}
+
+.btn.allTricks i
+{
+	color: black;
+	font-size: 25px;
+}
+
+/* responsively enforce wrapping */
+.card-deck span {
+      display: none;
+}
+
+@media (min-width:1200px){
+    .card-deck span:nth-of-type(5n) {
+      display: block;
+      width: 100%;
+    }
+    
+}
+@media (min-width:992px) and (max-width: 1199px) {
+   .card-deck span:nth-of-type(4n) {
+      display: block;
+      width: 100%;
+    }
+    
+}
+@media (min-width:768px) and (max-width: 991px) {
+    .card-deck span:nth-of-type(3n) {
+      display: block;
+      width: 100%;
+    }
+}
+@media (min-width: 576px) and (max-width: 767px) {
+    .card-deck span:nth-of-type(2n) {
+      display: block;
+      width: 100%;
+    }
+}
