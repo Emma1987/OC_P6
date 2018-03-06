@@ -1,1 +1,3 @@
-
+snowtricks_home:
+    path:   /
+    defaults: { _controller: SnowtricksPlatformBundle:Trick:index }
