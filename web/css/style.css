@@ -3,10 +3,41 @@ body
 	font-family: 'PT Sans';
 }
 
-.name
+p
+{
+  font-size: 16px;
+}
+
+h1, h2
+{
+  font-size: 19px;
+}
+
+a:hover
+{
+  color: #18BC9C;
+}
+
+a.name, p.catchSentence
 {
 	font-family: 'Nova Mono', Arial;
 	font-size: 2em;
+}
+
+a.name
+{
+  text-decoration: none;
+  color: grey;
+}
+
+p.catchSentence
+{
+  position: absolute;
+  top: 550px;
+  right: 25%;
+  width: 50%;
+  color: #18BC9C;
+  text-align: center;
 }
 
 header
@@ -80,4 +111,31 @@ header
       display: block;
       width: 100%;
     }
+}
+
+/* VIEW */
+.content
+{
+  width: 70%;
+  margin: auto;
+  padding: 130px 0;
+}
+
+.coverImage
+{
+  position: relative;
+  display: inline-block;
+}
+
+.coverImage .btn-toolbar
+{
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 1;
+}
+
+.coverImage img
+{
+  max-width: 100%;
 }
