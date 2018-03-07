@@ -3,6 +3,7 @@
 namespace Snowtricks\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Trick
@@ -25,6 +26,7 @@ class Trick
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=100, unique=true)
+     * @Assert\Length(min=3, minMessage="Le nom de la figure doit contenir au minimum 3 caractères", max=100, maxMessage="Le nom de la figure doit contenir au maximum 100 caractères")
      */
     private $name;
 
@@ -32,6 +34,7 @@ class Trick
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255)
+     * @Assert\Length(min=10, minMessage="La description doit contenir au minimum 10 caractères", max=100, maxMessage="La description doit contenir au maximum 255 caractères")
      */
     private $description;
 
@@ -39,6 +42,7 @@ class Trick
      * @var datetime
      *
      * @ORM\Column(name="published_at", type="datetime")
+     * @Assert\DateTime()
      */
     private $publishedAt;
 
@@ -46,6 +50,7 @@ class Trick
      * @var datetime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @Assert\DateTime()
      */
     private $updatedAt;
 
@@ -55,6 +60,12 @@ class Trick
      * @ORM\Column(name="slug", type="string", length=255, unique=true)
      */
     private $slug;
+
+    public function __construct()
+    {
+        $this->publishedAt = new \Datetime();
+        $this->setSlug($this->getName());
+    }
 
 
     /**
@@ -124,6 +135,19 @@ class Trick
      */
     public function setSlug($slug)
     {
+        // $slug = mb_strtolower($slug,'UTF-8');
+        // $slug = \Normalizer::normalize($slug, Normalizer::NFC);
+
+        // setlocale(LC_CTYPE, 'fr_FR');
+        // $slug = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $slug);
+
+        // $slug = strip_tags($slug);
+        
+        // $slug = trim(preg_replace('#[^a-z0-9-]+#i', '-', $slug), '-');
+
+        // $search = array('#-{2,}#i');
+        // $slug = preg_replace($search, '-', $slug);
+
         $this->slug = $slug;
 
         return $this;
