@@ -1,0 +1,16 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Ajouter une figure{% endblock title%}
+
+{% block body %}
+	<div class="content">
+		<div class="card">
+			<div class="card-header">
+   				<h2>Ajouter une nouvelle figure</h2>
+			</div>
+			<div class="card-body">
+				{{ form(form) }}
+			</div>
+		</div>
+	</div>
+{% endblock body %}
