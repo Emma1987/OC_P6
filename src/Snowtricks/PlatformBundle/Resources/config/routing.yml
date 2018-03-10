@@ -3,7 +3,7 @@ snowtricks_home:
     defaults: { _controller: SnowtricksPlatformBundle:Trick:index }
 
 snowtricks_add:
-    path:   /new-trick
+    path:   /trick/add
     defaults: { _controller: SnowtricksPlatformBundle:Trick:add }
 
 snowtricks_view:

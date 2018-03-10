@@ -15,8 +15,9 @@
 	</div>
 
 	<div class="card mt-5">
-		<div class="card-header">
+		<div class="card-header text-center">
 			<h1>{{ trick.name|upper }}</h1>
+			<em>Cette figure appartient au groupe '{{ trick.trickgroup.name }}'</em>
 		</div>
 		<div class="card-body">
 			{% if trick.updatedAt is empty %}

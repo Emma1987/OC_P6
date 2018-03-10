@@ -9,7 +9,27 @@
    				<h2>Ajouter une nouvelle figure</h2>
 			</div>
 			<div class="card-body">
-				{{ form(form) }}
+				<div class="list-group-item">
+					{{ form_start(trickForm) }}
+					{{ form_errors(trickForm) }}
+                    <div class="form-group">
+                    	{{ form_label(trickForm.name, 'Nom de la figure') }}
+                    	{{ form_widget(trickForm.name) }}
+                    </div>
+                    <div class="form-group">
+                    	{{ form_label(trickForm.description, 'Description de la figure') }}
+                    	{{ form_widget(trickForm.description) }}
+					</div>
+				</div>
+				<div class="list-group-item">
+					<p>Ajouter un groupe à cette figure</p>
+					{{ form_widget(trickForm.trickgroup) }}
+				</div>
+				<div class="list-group-item">
+					{{ form_widget(trickForm.save) }}
+				</div>
+			{{ form_rest(trickForm) }}
+  			{{ form_end(trickForm) }}
 			</div>
 		</div>
 	</div>
