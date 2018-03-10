@@ -4,6 +4,7 @@ namespace Snowtricks\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Snowtricks\PlatformBundle\Entity\TrickGroup;
 
 /**
  * Trick
@@ -61,12 +62,34 @@ class Trick
      */
     private $slug;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Snowtricks\PlatformBundle\Entity\TrickGroup")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $trickgroup;
+
     public function __construct()
     {
         $this->publishedAt = new \Datetime();
-        $this->setSlug($this->getName());
     }
 
+    public function createSlug($slug)
+    {
+        $slug = mb_strtolower($slug,'UTF-8');
+        $slug = \Normalizer::normalize($slug, \Normalizer::NFC);
+
+        setlocale(LC_CTYPE, 'fr_FR');
+        $slug = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $slug);
+
+        $slug = strip_tags($slug);
+        
+        $slug = trim(preg_replace('#[^a-z0-9-]+#i', '-', $slug), '-');
+
+        $search = array('#-{2,}#i');
+        $slug = preg_replace($search, '-', $slug);
+
+        return $slug;
+    }
 
     /**
      * Get id
@@ -135,19 +158,6 @@ class Trick
      */
     public function setSlug($slug)
     {
-        // $slug = mb_strtolower($slug,'UTF-8');
-        // $slug = \Normalizer::normalize($slug, Normalizer::NFC);
-
-        // setlocale(LC_CTYPE, 'fr_FR');
-        // $slug = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $slug);
-
-        // $slug = strip_tags($slug);
-        
-        // $slug = trim(preg_replace('#[^a-z0-9-]+#i', '-', $slug), '-');
-
-        // $search = array('#-{2,}#i');
-        // $slug = preg_replace($search, '-', $slug);
-
         $this->slug = $slug;
 
         return $this;
@@ -209,5 +219,29 @@ class Trick
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set trickgroup
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\TrickGroup $trickgroup
+     *
+     * @return Trick
+     */
+    public function setTrickgroup(TrickGroup $trickgroup)
+    {
+        $this->trickgroup = $trickgroup;
+
+        return $this;
+    }
+
+    /**
+     * Get trickgroup
+     *
+     * @return \Snowtricks\PlatformBundle\Entity\TrickGroup
+     */
+    public function getTrickgroup()
+    {
+        return $this->trickgroup;
     }
 }
