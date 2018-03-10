@@ -38,15 +38,16 @@ class TrickController extends Controller
 	public function addAction(Request $request)
 	{
 		$trick = new Trick();
-		$form = $this->get('form.factory')->create(TrickType::class, $trick);
+		$trickForm = $this->createForm(TrickType::class, $trick);
 
 		if ($request->isMethod('POST')) {
-			$form->handleRequest($request);
+			$trickForm->handleRequest($request);
 
-			if ($form->isValid()) {
+			if ($trickForm->isValid()) {
 				$em = $this->getDoctrine()->getManager();
-				$trick->setSlug('Test');
 				$em->persist($trick);
+				$slug = $trick->createSlug($trick->getName());
+				$trick->setSlug($slug);
 				$em->flush();
 
 				$request->getSession()->getFlashBag()->add('notice', 'Votre figure a bien été ajoutée !');
@@ -57,7 +58,7 @@ class TrickController extends Controller
 		}
 
 		return $this->render('add.html.twig', array(
-			'form' => $form->createView()
+			'trickForm' => $trickForm->createView()
 		));
 	}
 }

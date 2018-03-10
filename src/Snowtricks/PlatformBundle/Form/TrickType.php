@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class TrickType extends AbstractType
 {
@@ -18,6 +19,10 @@ class TrickType extends AbstractType
         $builder
             ->add('name',           TextType::class)
             ->add('description',    TextType::class)
+            ->add('trickgroup',     EntityType::class, array(
+                'class'         => 'SnowtricksPlatformBundle:TrickGroup',
+                'choice_label'  => 'name',
+                'expanded'      => true))
             ->add('save',           SubmitType::class);
     }
 
