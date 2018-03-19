@@ -5,7 +5,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Snowtricks\PlatformBundle\Entity\Trick;
+use Snowtricks\PlatformBundle\Entity\Image;
 use Snowtricks\PlatformBundle\Form\TrickType;
+use Snowtricks\PlatformBundle\Form\ImageType;
 
 class TrickController extends Controller
 {
@@ -31,7 +33,8 @@ class TrickController extends Controller
 			->findOneBySlug($request->attributes->get('slug'));
 
 		return $this->render('view.html.twig', array(
-			'trick' => $trick
+			'trick' => $trick,
+			'images' => $trick->getImages()
 		));
 	}
 
@@ -48,6 +51,15 @@ class TrickController extends Controller
 				$em->persist($trick);
 				$slug = $trick->createSlug($trick->getName());
 				$trick->setSlug($slug);
+
+				if (!empty($trickForm['images']->getData())) {
+					$files = $trickForm['images']->getData();
+					foreach ($files as $file) {
+						$image = new Image();
+						$trick->addImage($image);
+						$image->upload($file);
+					}
+				}
 				$em->flush();
 
 				$request->getSession()->getFlashBag()->add('notice', 'Votre figure a bien été ajoutée !');

@@ -9,9 +9,9 @@
    				<h2>Ajouter une nouvelle figure</h2>
 			</div>
 			<div class="card-body">
+				{{ form_start(trickForm) }}
+				{{ form_errors(trickForm) }}
 				<div class="list-group-item">
-					{{ form_start(trickForm) }}
-					{{ form_errors(trickForm) }}
                     <div class="form-group">
                     	{{ form_label(trickForm.name, 'Nom de la figure') }}
                     	{{ form_widget(trickForm.name) }}
@@ -26,10 +26,15 @@
 					{{ form_widget(trickForm.trickgroup) }}
 				</div>
 				<div class="list-group-item">
-					{{ form_widget(trickForm.save) }}
+					{% form_theme trickForm.images 'jquery.collection.html.twig' %}
+					<div class="addMedia btn btn-primary">Ajouter une image</div>
+					{{ form_widget(trickForm.images) }}
 				</div>
-			{{ form_rest(trickForm) }}
-  			{{ form_end(trickForm) }}
+				{{ form_widget(trickForm.save) }}
+
+				{{ form_rest(trickForm) }}
+
+  				{{ form_end(trickForm) }}
 			</div>
 		</div>
 	</div>
