@@ -4,7 +4,7 @@ namespace Snowtricks\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Snowtricks\PlatformBundle\Entity\TrickGroup;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Trick
@@ -68,9 +68,16 @@ class Trick
      */
     private $trickgroup;
 
+    /**
+     * @var Image[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Image", mappedBy="trick", cascade={"persist"})
+     */
+    private $images;
+
     public function __construct()
     {
         $this->publishedAt = new \Datetime();
+        $this->images = new ArrayCollection();
     }
 
     public function createSlug($slug)
@@ -243,5 +250,41 @@ class Trick
     public function getTrickgroup()
     {
         return $this->trickgroup;
+    }
+
+
+    /**
+     * Add image
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Image $image
+     *
+     * @return Trick
+     */
+    public function addImage(Image $image)
+    {
+        $this->images->add($image);
+        $image->setTrick($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove image
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Image $image
+     */
+    public function removeImage(\Snowtricks\PlatformBundle\Entity\Image $image)
+    {
+        $this->images->removeElement($image);
+    }
+
+    /**
+     * Get images
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getImages()
+    {
+        return $this->images;
     }
 }
