@@ -7,7 +7,10 @@ snowtricks_add:
     defaults: { _controller: SnowtricksPlatformBundle:Trick:add }
 
 snowtricks_view:
-    path:   /{slug}
-    defaults: { _controller: SnowtricksPlatformBundle:Trick:show }
+    path:   /{slug}/{id}
+    defaults: 
+      _controller: SnowtricksPlatformBundle:Trick:show
+      id: 1
     requirements:
-        slug: '.+'
+        slug: "[a-zA-Z0-9-]+"
+        id: \d+

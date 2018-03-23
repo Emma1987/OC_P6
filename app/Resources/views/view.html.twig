@@ -124,6 +124,13 @@
 					<em> Posté par {{ message.author }} le {{ message.messagePublished|date("d F Y", "Europe/Paris") }}</em><br />
 					Contenu : {{ message.content }} <hr />
 				{% endfor %}
+				<nav>
+					<ul class="pagination justify-content-center">
+						{% for page in range(1, nbPages) %}
+							<li class="page-item"><a class="page-link" href="{{ path('snowtricks_view', {'slug': trick.slug, 'id': page}) }}">{{ page }}</a></li>
+						{% endfor %}
+					</ul>
+				</nav>
 			{% endif %}
 		</div>
 	</div>

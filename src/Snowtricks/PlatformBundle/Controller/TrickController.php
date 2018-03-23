@@ -54,12 +54,26 @@ class TrickController extends Controller
 			}
 		}
 
+		// PAGINATION
+		$perPage = $this->container->getParameter('message.pagination');
+		$page = $request->attributes->get('id');
+
+		$pagination = $this
+			->getDoctrine()
+			->getManager()
+			->getRepository('SnowtricksPlatformBundle:Message')
+			->paginator($trick->getId(), $page, $perPage);
+
+		$nbPages = ceil(count($pagination) / $perPage);
+
 		// VIEW
 		return $this->render('view.html.twig', array(
 			'trick' => $trick,
 			'images' => $trick->getImages(),
 			'videos' => $trick->getVideos(),
-			'messages' => $trick->getMessages(),
+			'messages' => $pagination,
+			'page' => $page,
+			'nbPages' => $nbPages,
 			'messageForm' => $messageForm->createView(),
 			
 		));
