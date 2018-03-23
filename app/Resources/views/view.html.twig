@@ -99,4 +99,33 @@
 		</div>
 	</div>
 </div>
+
+<!-- MESSAGES -->
+<div class="discuss">
+	<div class="card mt-5">
+		<div class="card-header text-center">
+			<h2>Discutons ensemble sur cette figure</h2>
+		</div>
+		<div class="card-body">
+			{{ form_start(messageForm) }}
+			{{ form_errors(messageForm) }}
+			<div class="form-group row">
+				{{ form_widget(messageForm.content, {'attr': {'class': 'col-sm-9 col-xs-12 form-control mr-2'}}) }}
+				{{ form_widget(messageForm.save, { 'label': 'Envoyer', 'attr': {'class': 'col-sm-2 col-xs-12 mr-2 btn btn-light'}}) }}
+			</div>
+			{{ form_rest(messageForm) }}
+			{{ form_end(messageForm) }}
+
+			<h3 class="text-center">Fil de discussion</h3>
+			{% if messages is empty %}
+				<p>Aucun commentaire n'a encore été posté, soyez le premier !</p>
+			{% else %}
+				{% for message in messages %}
+					<em> Posté par {{ message.author }} le {{ message.messagePublished|date("d F Y", "Europe/Paris") }}</em><br />
+					Contenu : {{ message.content }} <hr />
+				{% endfor %}
+			{% endif %}
+		</div>
+	</div>
+</div>
 {% endblock body %}

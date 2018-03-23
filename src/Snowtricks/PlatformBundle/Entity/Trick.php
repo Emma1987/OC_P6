@@ -80,10 +80,17 @@ class Trick
      */
     private $videos;
 
+    /**
+     * @var Message[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Message", inversedBy="trick", cascade={"persist"})
+     */
+    private $messages;
+
     public function __construct()
     {
         $this->publishedAt = new \Datetime();
         $this->images = new ArrayCollection();
+        $this->messages = new ArrayCollection();
         $this->videos = new ArrayCollection();
     }
 
@@ -293,6 +300,42 @@ class Trick
     public function getImages()
     {
         return $this->images;
+    }
+
+    /**
+     * Add message.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Message $message
+     *
+     * @return Trick
+     */
+    public function addMessage(\Snowtricks\PlatformBundle\Entity\Message $message)
+    {
+        $this->messages[] = $message;
+
+        return $this;
+    }
+
+    /**
+     * Remove message.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Message $message
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeMessage(\Snowtricks\PlatformBundle\Entity\Message $message)
+    {
+        return $this->messages->removeElement($message);
+    }
+
+    /**
+     * Get messages.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMessages()
+    {
+        return $this->messages;
     }
 
     /**

@@ -6,8 +6,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Snowtricks\PlatformBundle\Entity\Trick;
 use Snowtricks\PlatformBundle\Entity\Image;
+use Snowtricks\PlatformBundle\Entity\Message;
 use Snowtricks\PlatformBundle\Form\TrickType;
 use Snowtricks\PlatformBundle\Form\ImageType;
+use Snowtricks\PlatformBundle\Form\MessageType;
 
 class TrickController extends Controller
 {
@@ -32,10 +34,34 @@ class TrickController extends Controller
 			->getRepository('SnowtricksPlatformBundle:Trick')
 			->findOneBySlug($request->attributes->get('slug'));
 
+		// MESSAGE FORM
+		$message = new Message();
+		$messageForm = $this->createForm(MessageType::class, $message);
+
+		if ($request->isMethod('POST')) {
+			$messageForm->handleRequest($request);
+
+			if ($messageForm->isValid()) {
+				$em = $this->getDoctrine()->getManager();
+				$em->persist($message);
+				$trick->addMessage($message);
+				$em->flush();
+
+				$request->getSession()->getFlashBag()->add('notice', 'Votre figure a bien été ajoutée !');
+				return $this->redirectToRoute('snowtricks_view', array(
+					'slug' => $trick->getSlug()
+				));
+			}
+		}
+
+		// VIEW
 		return $this->render('view.html.twig', array(
 			'trick' => $trick,
 			'images' => $trick->getImages(),
-			'videos' => $trick->getVideos(),			
+			'videos' => $trick->getVideos(),
+			'messages' => $trick->getMessages(),
+			'messageForm' => $messageForm->createView(),
+			
 		));
 	}
 
