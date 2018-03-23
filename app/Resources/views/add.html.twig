@@ -4,36 +4,43 @@
 
 {% block body %}
 	<div class="content">
-		<div class="card">
+		<div class="card mb-5">
 			<div class="card-header">
-   				<h2>Ajouter une nouvelle figure</h2>
+   				<h2 class="text-center">Ajouter une nouvelle figure</h2>
 			</div>
 			<div class="card-body">
 				{{ form_start(trickForm) }}
-				{{ form_errors(trickForm) }}
-				<div class="list-group-item">
-                    <div class="form-group">
-                    	{{ form_label(trickForm.name, 'Nom de la figure') }}
-                    	{{ form_widget(trickForm.name) }}
+				{{ form_errors(trickForm, {'attr': {'class': 'btn btn-danger'}}) }}
+				<div class="list-group-item mb-2">
+                    <div class="form-group row">
+                    	{{ form_label(trickForm.name, 'Nom de la figure', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
+                    	{{ form_widget(trickForm.name, {'attr': {'class': 'col-sm-8 col-xs-12 form-control'}}) }}
                     </div>
-                    <div class="form-group">
-                    	{{ form_label(trickForm.description, 'Description de la figure') }}
-                    	{{ form_widget(trickForm.description) }}
+                    <div class="form-group row">
+                    	{{ form_label(trickForm.description, 'Description', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
+                    	{{ form_widget(trickForm.description, {'attr': {'class': 'col-sm-8 col-xs-12 form-control'}}) }}
+					</div>
+					<div class="form-group row">
+						{{ form_label(trickForm.trickgroup, 'Groupe', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
+						{{ form_widget(trickForm.trickgroup, {'attr': {'class': 'col-sm-8 col-xs-12 form-control'}}) }}
 					</div>
 				</div>
-				<div class="list-group-item">
-					<p>Ajouter un groupe à cette figure</p>
-					{{ form_widget(trickForm.trickgroup) }}
+				<div class="list-group-item mb-2">
+					<div class="form-group row">
+						{{ form_label(trickForm.images, 'Image(s)', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
+						{% form_theme trickForm.images 'jquery.collection.html.twig' %}
+						{{ form_widget(trickForm.images) }}
+					</div>
+					<div class="form-group row">
+						{{ form_label(trickForm.videos, 'Vidéo(s)', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
+						{% form_theme trickForm.videos 'jquery.collection.html.twig' %}
+						{{ form_widget(trickForm.videos) }}
+					</div>
 				</div>
-				<div class="list-group-item">
-					{% form_theme trickForm.images 'jquery.collection.html.twig' %}
-					<div class="addMedia btn btn-primary">Ajouter une image</div>
-					{{ form_widget(trickForm.images) }}
-				</div>
-				{{ form_widget(trickForm.save) }}
+
+				{{ form_widget(trickForm.save, {'attr': {'class': 'btn btn-light'}}) }}
 
 				{{ form_rest(trickForm) }}
-
   				{{ form_end(trickForm) }}
 			</div>
 		</div>

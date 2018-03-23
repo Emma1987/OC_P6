@@ -34,7 +34,8 @@ class TrickController extends Controller
 
 		return $this->render('view.html.twig', array(
 			'trick' => $trick,
-			'images' => $trick->getImages()
+			'images' => $trick->getImages(),
+			'videos' => $trick->getVideos(),			
 		));
 	}
 

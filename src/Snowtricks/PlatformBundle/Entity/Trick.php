@@ -74,10 +74,17 @@ class Trick
      */
     private $images;
 
+    /**
+     * @var Video[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Video", cascade={"persist"})
+     */
+    private $videos;
+
     public function __construct()
     {
         $this->publishedAt = new \Datetime();
         $this->images = new ArrayCollection();
+        $this->videos = new ArrayCollection();
     }
 
     public function createSlug($slug)
@@ -286,5 +293,41 @@ class Trick
     public function getImages()
     {
         return $this->images;
+    }
+
+    /**
+     * Add video.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Video $video
+     *
+     * @return Trick
+     */
+    public function addVideo(\Snowtricks\PlatformBundle\Entity\Video $video)
+    {
+        $this->videos[] = $video;
+
+        return $this;
+    }
+
+    /**
+     * Remove video.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Video $video
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeVideo(\Snowtricks\PlatformBundle\Entity\Video $video)
+    {
+        return $this->videos->removeElement($video);
+    }
+
+    /**
+     * Get videos.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getVideos()
+    {
+        return $this->videos;
     }
 }
