@@ -4,6 +4,7 @@ namespace Snowtricks\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Trick
@@ -61,12 +62,55 @@ class Trick
      */
     private $slug;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Snowtricks\PlatformBundle\Entity\TrickGroup")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $trickgroup;
+
+    /**
+     * @var Image[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Image", mappedBy="trick", cascade={"persist"})
+     */
+    private $images;
+
+    /**
+     * @var Video[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Video", cascade={"persist"})
+     */
+    private $videos;
+
+    /**
+     * @var Message[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Message", inversedBy="trick", cascade={"persist"})
+     */
+    private $messages;
+
     public function __construct()
     {
         $this->publishedAt = new \Datetime();
-        $this->setSlug($this->getName());
+        $this->images = new ArrayCollection();
+        $this->messages = new ArrayCollection();
+        $this->videos = new ArrayCollection();
     }
 
+    public function createSlug($slug)
+    {
+        $slug = mb_strtolower($slug,'UTF-8');
+        $slug = \Normalizer::normalize($slug, \Normalizer::NFC);
+
+        setlocale(LC_CTYPE, 'fr_FR');
+        $slug = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $slug);
+
+        $slug = strip_tags($slug);
+        
+        $slug = trim(preg_replace('#[^a-z0-9-]+#i', '-', $slug), '-');
+
+        $search = array('#-{2,}#i');
+        $slug = preg_replace($search, '-', $slug);
+
+        return $slug;
+    }
 
     /**
      * Get id
@@ -135,19 +179,6 @@ class Trick
      */
     public function setSlug($slug)
     {
-        // $slug = mb_strtolower($slug,'UTF-8');
-        // $slug = \Normalizer::normalize($slug, Normalizer::NFC);
-
-        // setlocale(LC_CTYPE, 'fr_FR');
-        // $slug = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $slug);
-
-        // $slug = strip_tags($slug);
-        
-        // $slug = trim(preg_replace('#[^a-z0-9-]+#i', '-', $slug), '-');
-
-        // $search = array('#-{2,}#i');
-        // $slug = preg_replace($search, '-', $slug);
-
         $this->slug = $slug;
 
         return $this;
@@ -209,5 +240,137 @@ class Trick
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set trickgroup
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\TrickGroup $trickgroup
+     *
+     * @return Trick
+     */
+    public function setTrickgroup(TrickGroup $trickgroup)
+    {
+        $this->trickgroup = $trickgroup;
+
+        return $this;
+    }
+
+    /**
+     * Get trickgroup
+     *
+     * @return \Snowtricks\PlatformBundle\Entity\TrickGroup
+     */
+    public function getTrickgroup()
+    {
+        return $this->trickgroup;
+    }
+
+
+    /**
+     * Add image
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Image $image
+     *
+     * @return Trick
+     */
+    public function addImage(Image $image)
+    {
+        $this->images->add($image);
+        $image->setTrick($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove image
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Image $image
+     */
+    public function removeImage(\Snowtricks\PlatformBundle\Entity\Image $image)
+    {
+        $this->images->removeElement($image);
+    }
+
+    /**
+     * Get images
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    /**
+     * Add message.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Message $message
+     *
+     * @return Trick
+     */
+    public function addMessage(\Snowtricks\PlatformBundle\Entity\Message $message)
+    {
+        $this->messages[] = $message;
+
+        return $this;
+    }
+
+    /**
+     * Remove message.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Message $message
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeMessage(\Snowtricks\PlatformBundle\Entity\Message $message)
+    {
+        return $this->messages->removeElement($message);
+    }
+
+    /**
+     * Get messages.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMessages()
+    {
+        return $this->messages;
+    }
+
+    /**
+     * Add video.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Video $video
+     *
+     * @return Trick
+     */
+    public function addVideo(\Snowtricks\PlatformBundle\Entity\Video $video)
+    {
+        $this->videos[] = $video;
+
+        return $this;
+    }
+
+    /**
+     * Remove video.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Video $video
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeVideo(\Snowtricks\PlatformBundle\Entity\Video $video)
+    {
+        return $this->videos->removeElement($video);
+    }
+
+    /**
+     * Get videos.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getVideos()
+    {
+        return $this->videos;
     }
 }

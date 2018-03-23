@@ -1,7 +1,8 @@
 # Learn more about services, parameters and containers at
 # https://symfony.com/doc/current/service_container.html
 parameters:
-    #parameter_name: value
+    # number of messages per page
+    message.pagination: 10
 
 services:
     # default configuration for services in *this* file
