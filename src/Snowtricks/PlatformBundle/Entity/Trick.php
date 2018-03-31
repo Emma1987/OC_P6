@@ -70,19 +70,19 @@ class Trick
 
     /**
      * @var Image[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Image", mappedBy="trick", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Image", mappedBy="trick", cascade={"persist", "remove"})
      */
     private $images;
 
     /**
      * @var Video[]|ArrayCollection
-     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Video", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Video", cascade={"persist", "remove"})
      */
     private $videos;
 
     /**
      * @var Message[]|ArrayCollection
-     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Message", inversedBy="trick", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Message", inversedBy="trick", cascade={"persist", "remove"})
      */
     private $messages;
 

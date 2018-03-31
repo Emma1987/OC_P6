@@ -12,6 +12,12 @@ snowtricks_update:
     requirements:
         slug: "[a-zA-Z0-9-]+"
 
+snowtricks_delete:
+    path: /trick/delete/{id}
+    defaults: { _controller: SnowtricksPlatformBundle:Trick:delete }
+    requirements:
+        slug: \d+
+
 snowtricks_view:
     path:   /trick/{slug}
     defaults: 

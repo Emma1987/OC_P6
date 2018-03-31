@@ -19,13 +19,34 @@
 	  		<div class="tab-pane fade" id="tricks" role="tabpanel" aria-labelledby="tricks">
 	  			<div class="card-deck">
 				{% for trick in listTricks %}
-	  				<div class="card homeTrick">
-		  				<img class="card-img-top" src="{{ asset('img/card.jpg') }}" alt="{{ trick.name }}">
+	  				<div class="card homeTrick mb-5">
+						{% if trick.images is empty %}
+							<img src="{{ asset('img/background.jpg') }}" alt="Figure de snowboard" />
+						{% else %}	
+							<img src="{{ asset(trick.images|first.url) }}" alt="{{ trick.images|first.alt }}" />
+						{% endif %}
 		  				<div class="card-body">
 		    				<a href="{{ path('snowtricks_view', {'slug': trick.slug}) }}" class="card-title">{{ trick.name }}</a>
-		    				<a href="#"><i class="fa fa-pencil-square-o fa-fw"></i></a>
-		    				<a href="#"><i class="fa fa-trash fa-fw"></i></a>
+		    				<a href="{{ path('snowtricks_update', {'slug': trick.slug}) }}"><i class="fa fa-pencil-square-o fa-fw"></i></a>
+		    				<a data-toggle="modal" data-target="#deleteConfirmation{{ trick.id }}"><i class="fa fa-trash fa-fw"></i></a>
 		  				</div>
+		  				<!-- MODAL DELETE CONFIRM -->
+						<div class="modal fade" id="deleteConfirmation{{ trick.id }}" role="dialog">
+						    <div class="modal-dialog" role="document">
+						        <div class="modal-content">
+						            <div class="modal-header">
+						                <h3 class="modal-title" id="myModalLabel">Confirmation</h3>
+						            </div>
+						            <div class="modal-body">
+						                <p>Confirmez vous la suppression de cette figure et de ses messages ?</p>
+						            </div>
+					                <div class="modal-footer">
+					                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+					                    <a class="btn btn-danger" href="{{ path('snowtricks_delete', {'id': trick.id}) }}">Supprimer</a>
+					                </div>
+						        </div>
+						    </div>
+						</div>
 					</div>
 					<span></span>
 				{% endfor %}

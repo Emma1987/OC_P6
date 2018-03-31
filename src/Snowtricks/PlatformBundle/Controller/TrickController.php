@@ -153,4 +153,20 @@ class TrickController extends Controller
 			'videos'	=> $trick->getVideos()
 		));
 	}
+
+	public function deleteAction(Request $request)
+	{
+		$trick = $this
+			->getDoctrine()
+			->getManager()
+			->getRepository('SnowtricksPlatformBundle:Trick')
+			->findOneById($request->attributes->get('id'));
+
+		$entityManager = $this->getDoctrine()->getManager();
+		$entityManager->remove($trick);
+		$entityManager->flush();
+
+		$request->getSession()->getFlashBag()->add('notice', 'La figure a bien été supprimée.');
+		return $this->redirectToRoute('snowtricks_home');
+	}
 }
