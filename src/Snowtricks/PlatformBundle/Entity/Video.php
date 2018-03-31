@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="video")
  * @ORM\Entity(repositoryClass="Snowtricks\PlatformBundle\Repository\VideoRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Video
 {
@@ -26,8 +27,19 @@ class Video
      * @var string
      *
      * @ORM\Column(name="url", type="string", length=255)
+     * @Assert\Regex(
+     *     pattern="#(http|https)://(www.youtu.be|www.dailymotion.com)/#",
+     *     match=true,
+     *     message="L'url ne semble pas être une URL de partage provenant de Youtube ou Dailymotion.")
      */
     private $url;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="iframe_url", type="string", length=255)
+     */
+    private $iframeUrl;
 
 
     /**
@@ -62,5 +74,72 @@ class Video
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * Set iframeUrl.
+     *
+     * @param string $iframeUrl
+     *
+     * @return Video
+     */
+    public function setIframeUrl($iframeUrl)
+    {
+        $this->iframeUrl = $iframeUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get iframeUrl.
+     *
+     * @return string
+     */
+    public function getIframeUrl()
+    {
+        return $this->iframeUrl;
+    }
+
+    /**
+     * Get the platform where the video comes from
+     * 
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * @ORM\PreFlush
+     */
+    public function getPlatformFromUrl()
+    {
+        if (preg_match('#^(http|https)://youtu.be/#', $this->url)) {
+            $this->fromYoutube($this->url);
+        }
+        elseif (preg_match('#^(http|https)://dai.ly/#', $this->url)) {
+            $this->fromDailymotion($this->url);
+        }
+    }
+
+    /**
+     * Defines the Youtube iframe Url
+     * 
+     */
+    private function fromYoutube($url)
+    {
+        $pos = strpos($url, 'be/');
+        $videoCode = substr($url, $pos+3);
+        $newUrl = 'https://www.youtube.com/embed/'.$videoCode;
+
+        $this->setIframeUrl($newUrl);    
+    }
+
+    /**
+     * Defines the Dailymotion iframe Url
+     * 
+     */
+    private function fromDailymotion($url)
+    {
+        $pos = strpos($url, 'ly/');
+        $videoCode = substr($url, $pos+3);
+        $newUrl = '//www.dailymotion.com/embed/video/'.$videoCode;
+
+        $this->setIframeUrl($newUrl);    
     }
 }
