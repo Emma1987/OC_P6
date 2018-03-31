@@ -6,7 +6,9 @@
 	<div class="content">
 		<div class="card mb-5">
 			<div class="card-header">
-   				<h2 class="text-center">Ajouter une nouvelle figure</h2>
+				{% block cardHeader %}
+   					<h2 class="text-center">Ajouter une nouvelle figure</h2>
+				{% endblock %}
 			</div>
 			<div class="card-body">
 				{{ form_start(trickForm) }}
@@ -26,6 +28,7 @@
 					</div>
 				</div>
 				<div class="list-group-item mb-2">
+					{% block updateImage %}{% endblock %}
 					<div class="form-group row">
 						{{ form_label(trickForm.images, 'Image(s)', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
 						{% form_theme trickForm.images 'jquery.collection.html.twig' %}
@@ -38,7 +41,7 @@
 					</div>
 				</div>
 
-				{{ form_widget(trickForm.save, {'attr': {'class': 'btn btn-light'}}) }}
+				{{ form_widget(trickForm.save, {'attr': {'class': 'btn btn-light'}, 'label' : 'Enregistrer'}) }}
 
 				{{ form_rest(trickForm) }}
   				{{ form_end(trickForm) }}

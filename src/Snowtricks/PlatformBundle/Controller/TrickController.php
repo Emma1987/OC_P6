@@ -56,7 +56,7 @@ class TrickController extends Controller
 
 		// PAGINATION
 		$perPage = $this->container->getParameter('message.pagination');
-		$page = $request->attributes->get('id');
+		$page = $request->query->get('page', 1);
 
 		$pagination = $this
 			->getDoctrine()
@@ -84,34 +84,73 @@ class TrickController extends Controller
 		$trick = new Trick();
 		$trickForm = $this->createForm(TrickType::class, $trick);
 
-		if ($request->isMethod('POST')) {
-			$trickForm->handleRequest($request);
+		$trickForm->handleRequest($request);
 
-			if ($trickForm->isValid()) {
-				$em = $this->getDoctrine()->getManager();
-				$em->persist($trick);
-				$slug = $trick->createSlug($trick->getName());
-				$trick->setSlug($slug);
+		if ($trickForm->isSubmitted() && $trickForm->isValid()) {
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($trick);
+			$slug = $trick->createSlug($trick->getName());
+			$trick->setSlug($slug);
 
-				if (!empty($trickForm['images']->getData())) {
-					$files = $trickForm['images']->getData();
-					foreach ($files as $file) {
-						$image = new Image();
-						$trick->addImage($image);
-						$image->upload($file);
-					}
+			if (!empty($trickForm['images']->getData())) {
+				$files = $trickForm['images']->getData();
+				foreach ($files as $file) {
+					$image = new Image();
+					$trick->addImage($image);
+					$image->upload($file);
 				}
-				$em->flush();
-
-				$request->getSession()->getFlashBag()->add('notice', 'Votre figure a bien été ajoutée !');
-				return $this->redirectToRoute('snowtricks_view', array(
-					'slug' => $trick->getSlug()
-				));
 			}
+			$em->flush();
+
+			$request->getSession()->getFlashBag()->add('notice', 'Votre figure a bien été ajoutée !');
+			return $this->redirectToRoute('snowtricks_view', array(
+				'slug' => $trick->getSlug()
+			));
 		}
 
 		return $this->render('add.html.twig', array(
 			'trickForm' => $trickForm->createView()
+		));
+	}
+
+	public function updateAction(Request $request)
+	{
+		$trick = $this->getDoctrine()
+			->getManager()
+			->getRepository('SnowtricksPlatformBundle:Trick')
+			->findOneBySlug($request->attributes->get('slug'));
+
+		$trickForm = $this->createForm(TrickType::class, $trick);
+
+		$trickForm->handleRequest($request);
+
+		if ($trickForm->isSubmitted() && $trickForm->isValid()) {
+			$em = $this->getDoctrine()->getManager();
+			$em->persist($trick);
+			$slug = $trick->createSlug($trick->getName());
+			$trick->setSlug($slug);
+
+			if (!empty($trickForm['images']->getData())) {
+				$files = $trickForm['images']->getData();
+				foreach ($files as $file) {
+					$image = new Image();
+					$trick->addImage($image);
+					$image->upload($file);
+				}
+			}
+			$em->flush();
+
+			$request->getSession()->getFlashBag()->add('notice', 'Votre figure a bien été modifiée !');
+			return $this->redirectToRoute('snowtricks_view', array(
+				'slug' => $trick->getSlug()
+			));
+		}
+
+		return $this->render('update.html.twig', array(
+			'trickForm' => $trickForm->createView(),
+			'trick'		=> $trick,
+			'images'	=> $trick->getImages(),
+			'videos'	=> $trick->getVideos()
 		));
 	}
 }

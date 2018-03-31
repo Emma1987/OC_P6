@@ -6,11 +6,21 @@ snowtricks_add:
     path:   /trick/add
     defaults: { _controller: SnowtricksPlatformBundle:Trick:add }
 
-snowtricks_view:
-    path:   /{slug}/{id}
-    defaults: 
-      _controller: SnowtricksPlatformBundle:Trick:show
-      id: 1
+snowtricks_update:
+    path: /trick/update/{slug}
+    defaults: { _controller: SnowtricksPlatformBundle:Trick:update }
     requirements:
         slug: "[a-zA-Z0-9-]+"
+
+snowtricks_view:
+    path:   /trick/{slug}
+    defaults: 
+      _controller: SnowtricksPlatformBundle:Trick:show
+    requirements:
+        slug: "[a-zA-Z0-9-]+"
+
+snowtricks_image_remove:
+    path:   /image/remove/{id}
+    defaults: { _controller: SnowtricksPlatformBundle:Image:remove }
+    requirements:
         id: \d+
