@@ -30,3 +30,10 @@ snowtricks_image_remove:
     defaults: { _controller: SnowtricksPlatformBundle:Image:remove }
     requirements:
         id: \d+
+
+snowtricks_login:
+    path:   /login
+    defaults: { _controller: SnowtricksPlatformBundle:User:login }
+
+snowtricks_logout:
+    path:   /logout
