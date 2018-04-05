@@ -31,6 +31,14 @@ snowtricks_image_remove:
     requirements:
         id: \d+
 
+snowtricks_register:
+    path:   /user/register
+    defaults: { _controller: SnowtricksPlatformBundle:User:register }
+
+snowtricks_confirm_register:
+    path:   /user/confirm-register/{userId}-{token}
+    defaults: { _controller: SnowtricksPlatformBundle:User:confirmRegister }
+
 snowtricks_login:
     path:   /login
     defaults: { _controller: SnowtricksPlatformBundle:User:login }
