@@ -158,4 +158,24 @@ class UserController extends Controller
 			'error'			=> $error
 		));
 	}
+
+	public function accountAction(Request $request)
+	{
+		$avatar = new Avatar();
+		$avatarForm = $this->createForm(AvatarType::class, $avatar);
+
+		$avatarForm->handleRequest($request);
+		if ($avatarForm->isSubmitted()) {
+			$avatar = new Avatar();
+			$file = $avatarForm['file']->getData();
+			$name = $this->getUser()->getUsername();
+			$avatar->upload($file, $name);
+			$this->getUser()->setAvatar($avatar);
+		}
+
+		return $this->render('users/account.html.twig', array(
+			'avatarForm' => $avatarForm->createView(),
+			'avatar'	 => $this->getUser()->getAvatar()
+		));
+	}
 }

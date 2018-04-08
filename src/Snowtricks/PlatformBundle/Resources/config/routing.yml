@@ -19,7 +19,7 @@ snowtricks_delete:
         slug: \d+
 
 snowtricks_view:
-    path:   /trick/{slug}
+    path:   /tricks/{slug}
     defaults: 
       _controller: SnowtricksPlatformBundle:Trick:show
     requirements:
@@ -42,6 +42,14 @@ snowtricks_confirm_register:
 snowtricks_login:
     path:   /login
     defaults: { _controller: SnowtricksPlatformBundle:User:login }
+
+snowtricks_account:
+    path:   /user/account
+    defaults: { _controller: SnowtricksPlatformBundle:User:account }
+
+snowtricks_addavatar:
+    path:   /user/add-avatar
+    defaults: { _controller: SnowtricksPlatformBundle:User:addAvatar }
 
 snowtricks_resetpass:
     path:   /user/reset-password
