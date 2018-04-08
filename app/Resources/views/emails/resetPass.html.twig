@@ -1,0 +1,6 @@
+<h3>Vous avez demandé la réinitialisation de votre mot de passe.</h3>
+
+<p>Bonjour {{ name }} ! Votre demande de réinitialisation de mot de passe a bien été prise en compte. Pour définir un nouveau mot de passe, veuillez cliquez sur le lien suivant :</p>
+<p><a href="{{ url('snowtricks_confirm_resetpass', {'userId': userId, 'token': token}) }}">Réinitialisez</a> !<p>
+<hr>
+A très vite sur le site Snowtricks !
