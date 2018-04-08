@@ -43,5 +43,13 @@ snowtricks_login:
     path:   /login
     defaults: { _controller: SnowtricksPlatformBundle:User:login }
 
+snowtricks_resetpass:
+    path:   /user/reset-password
+    defaults: { _controller: SnowtricksPlatformBundle:User:resetPass }
+
+snowtricks_confirm_resetpass:
+    path:   /user/confirm-reset-password/{userId}-{token}
+    defaults: { _controller: SnowtricksPlatformBundle:User:confirmResetPass }
+
 snowtricks_logout:
     path:   /logout

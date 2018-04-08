@@ -12,7 +12,7 @@ use Snowtricks\PlatformBundle\Service\TokenGenerator;
 
 class UserController extends Controller
 {
-	public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, \Swift_Mailer $mailer)
+	public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, \Swift_Mailer $mailer, TokenGenerator $tokenGen)
 	{
 		$user = new User();
 		$userForm = $this->createForm(UserType::class, $user);
@@ -23,7 +23,7 @@ class UserController extends Controller
 			$password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
 			$user->setPassword($password);
 
-			$token = $this->createToken(60);
+			$token = $tokenGen->generateToken(60);
 			$user->setToken($token);
 
 			$entityManager = $this->getDoctrine()->getManager();
@@ -69,8 +69,83 @@ class UserController extends Controller
             $entityManager->flush($user);
 
             $request->getSession()->getFlashBag()->add('success', 'Votre inscription à bien été validée.');
-            return $this->render('login.html.twig');
+            return $this->redirectToRoute('snowtricks_login');
         }
+	}
+
+	public function resetPassAction(Request $request, \Swift_Mailer $mailer, TokenGenerator $tokenGen)
+	{
+		$user = new User();
+		$userForm = $this->createForm(UserType::class, $user, array(
+			'validation_groups' => array('resetPassDemand')));
+		$userForm->remove('email');
+		$userForm->remove('plainPassword');
+
+		$userForm->handleRequest($request);
+		if ($userForm->isSubmitted() && $userForm->isValid()) {
+			$entityManager = $this->getDoctrine()->getManager();
+			$user = $entityManager->getRepository(User::class)->findOneByUsername($userForm->getData()->getUsername());
+			if ($user == null) {
+				$request->getSession()->getFlashBag()->add('warning', 'Ce nom dutilisateur ne me dit rien...');
+			} else {
+				$token = $tokenGen->generateToken(60);
+				$user->setToken($token);
+
+            	$entityManager->flush($user);
+
+				$message = (new \Swift_Message('Votre demande de réinitialisation de mot de passe'))
+					->setFrom('manue21x@gmail.com')
+					->setTo($user->getEmail())
+					->setBody(
+						$this->renderView('emails/resetPass.html.twig', array(
+							'name'  => $user->getUsername(),
+							'token' => $user->getToken(),
+							'userId' => $user->getId())),
+						'text/html'
+				);
+				$mailer->send($message);
+				$request->getSession()->getFlashBag()->add('success', 'Un mail vous a été envoyé !');
+			}
+		}
+		return $this->render('resetPasswordDemand.html.twig', array(
+			'userForm' => $userForm->createView()));
+	}
+
+	public function confirmResetPassAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+	{
+		$userRepo = $this->getDoctrine()->getManager()->getRepository(User::class);
+		$user = $userRepo->findOneById($request->attributes->get('userId'));
+
+		if ($user == null || $user->getToken() != $request->attributes->get('token')) {
+			$request->getSession()->getFlashBag()->add('warning', 'Ce mail de confirmation n\'est pas valide.');
+			
+			$userForm = $this->createForm(UserType::class, $user, array(
+				'validation_groups' => array('resetPassDemand')));
+			$userForm->remove('email');
+			$userForm->remove('plainPassword');
+
+			return $this->redirectToRoute('snowtricks_resetpass', array(
+				'userForm' => $userForm->createView()));
+		} else {
+			$userForm = $this->createForm(UserType::class, $user, array(
+				'validation_groups' => array('resetPassAction')));
+			$userForm->remove('username');
+
+			$userForm->handleRequest($request);
+			if ($userForm->isSubmitted() && $userForm->isValid()) {
+				$user->setToken(null);
+				$password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+				$user->setPassword($password);
+
+				$entityManager = $this->getDoctrine()->getManager();
+            	$entityManager->flush($user);
+
+				$request->getSession()->getFlashBag()->add('success', 'Votre mot de passe a bien été modifié !');
+				return $this->redirectToRoute('snowtricks_login');
+			}
+			return $this->render('resetPasswordAction.html.twig', array(
+				'userForm' => $userForm->createView()));
+		}
 	}
 
 	public function loginAction(Request $request, AuthenticationUtils $authenticationUtils)
@@ -82,13 +157,5 @@ class UserController extends Controller
 			'last_username'	=> $lastUsername,
 			'error'			=> $error
 		));
-	}
-
-	public function createToken($length)
-	{
-		$tokenGenerator = $this->get(TokenGenerator::class);
-		$token = $tokenGenerator->generateToken($length);
-
-		return $token;
 	}
 }

@@ -23,11 +23,10 @@ class UserType extends AbstractType
             ->add('email',          EmailType::class)
             ->add('plainPassword',  RepeatedType::class, array(
                 'type'          => PasswordType::class,
-                'first_options' => array('label' => 'Password'),
-                'second_options' => array('label' => 'Repeat password'),
+                'first_options' => array('label' => 'Mot de passe'),
+                'second_options' => array('label' => 'Confirmer le mot de passe'),
             ))
             ->add('save',       SubmitType::class);;
-
     }
 
     /**
@@ -47,6 +46,4 @@ class UserType extends AbstractType
     {
         return 'snowtricks_platformbundle_user';
     }
-
-
 }
