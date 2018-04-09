@@ -67,7 +67,7 @@ class TrickController extends Controller
 		$nbPages = ceil(count($pagination) / $perPage);
 
 		// VIEW
-		return $this->render('view.html.twig', array(
+		return $this->render('tricks/view.html.twig', array(
 			'trick' => $trick,
 			'images' => $trick->getImages(),
 			'videos' => $trick->getVideos(),
@@ -108,7 +108,7 @@ class TrickController extends Controller
 			));
 		}
 
-		return $this->render('add.html.twig', array(
+		return $this->render('tricks/add.html.twig', array(
 			'trickForm' => $trickForm->createView()
 		));
 	}
@@ -146,7 +146,7 @@ class TrickController extends Controller
 			));
 		}
 
-		return $this->render('update.html.twig', array(
+		return $this->render('tricks/update.html.twig', array(
 			'trickForm' => $trickForm->createView(),
 			'trick'		=> $trick,
 			'images'	=> $trick->getImages(),

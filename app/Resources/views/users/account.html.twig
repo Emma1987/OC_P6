@@ -1,0 +1,46 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Mon compte{% endblock title%}
+
+{% block body %}
+	<div class="extraSmallContent">
+		{{ include('flash.html.twig') }}
+		<h2>Nom d'utilisateur</h2>
+		<p>{{ app.user.username }}</p>
+		<hr>
+		<h2>Email</h2>
+		<p>{{ app.user.email }}</p>
+		<hr>
+		<h2>Mot de passe</h2>
+		<a href="{{ path('snowtricks_resetpass') }}" class="btn btn-light"><em>Recevez un mail pour réinitialiser votre mot de passe</em></a>
+		<hr>
+		<h2>Avatar</h2>
+		<div class="avatar">
+			{% if avatar is not empty %}
+				<img src="{{ asset(avatar.url) }}" alt="avatar" />
+			{% else %}
+				<img src="{{ asset('uploads/avatars/avatar_defaut.png') }}" alt="avatar" />
+			{% endif %}
+		</div>
+		<div class="list-group" role="tablist">
+			<a data-toggle="list" href="#avatar" role="tab">
+				<em>Modifiez votre avatar</em>
+			</a>
+			<div class="">
+				<div class="tab-content">
+			  		<div class="tab-pane fade" id="avatar" role="tabpanel" aria-labelledby="avatar">
+						{{ form_start(avatarForm) }}
+						{{ form_errors(avatarForm, {'attr': {'class': 'alert alert-danger'}}) }}
+						<div class="list-group-item mb-2 mt-2">
+		                    <div class="form-group row">
+		                    	{{ form_widget(avatarForm.file) }}
+		                    </div>
+						</div>
+						{{ form_widget(avatarForm.save, {'attr': {'class': 'btn btn-light mb-2'}, 'label' : 'Envoyer'}) }}
+		  				{{ form_end(avatarForm) }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

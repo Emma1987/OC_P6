@@ -34,7 +34,7 @@ class UserController extends Controller
 				->setFrom('email@example.com')
 				->setTo($user->getEmail())
 				->setBody(
-					$this->renderView('Emails/registration.html.twig', array(
+					$this->renderView('emails/registration.html.twig', array(
 						'name'  => $user->getUsername(),
 						'token' => $user->getToken(),
 						'userId' => $user->getId())),
@@ -42,7 +42,7 @@ class UserController extends Controller
 				);
 			$mailer->send($message);
 
-			$request->getSession()->getFlashBag()->add('notice', 'Un mail de confirmation vous a été envoyé');
+			$request->getSession()->getFlashBag()->add('success', 'Un mail de confirmation vous a été envoyé');
 		}
 
 		return $this->render('register.html.twig', array(
@@ -59,7 +59,7 @@ class UserController extends Controller
 
 		if ($user == null || $user->getToken() != $request->attributes->get('token')) {
 			$request->getSession()->getFlashBag()->add('warning', 'Ce mail de confirmation n\'est associé à aucune demande de création de compte.');
-			return $this->render('register.html.twig', array(
+			return $this->render('users/register.html.twig', array(
 				'userForm' => $this->createForm(UserType::class, $user)->createView()));
 		} else {
             $user->setToken(null);
@@ -107,7 +107,7 @@ class UserController extends Controller
 				$request->getSession()->getFlashBag()->add('success', 'Un mail vous a été envoyé !');
 			}
 		}
-		return $this->render('resetPasswordDemand.html.twig', array(
+		return $this->render('users/resetPasswordDemand.html.twig', array(
 			'userForm' => $userForm->createView()));
 	}
 
@@ -143,7 +143,7 @@ class UserController extends Controller
 				$request->getSession()->getFlashBag()->add('success', 'Votre mot de passe a bien été modifié !');
 				return $this->redirectToRoute('snowtricks_login');
 			}
-			return $this->render('resetPasswordAction.html.twig', array(
+			return $this->render('users/resetPasswordAction.html.twig', array(
 				'userForm' => $userForm->createView()));
 		}
 	}
@@ -153,7 +153,7 @@ class UserController extends Controller
 		$error = $authenticationUtils->getLastAuthenticationError();
 		$lastUsername = $authenticationUtils->getLastUsername();
 
-		return $this->render('login.html.twig', array(
+		return $this->render('users/login.html.twig', array(
 			'last_username'	=> $lastUsername,
 			'error'			=> $error
 		));
