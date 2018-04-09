@@ -31,6 +31,11 @@ class User implements AdvancedUserInterface, \Serializable
      *
      * @ORM\Column(name="username", type="string", length=50, unique=true)
      * @Assert\NotBlank(groups={"resetPassDemand"})
+     * @Assert\Length(
+     *     min = 3, 
+     *     minMessage = "Votre nom d'utilisateur doit contenir au minimum 3 caractères", 
+     *     max = 100, 
+     *     maxMessage = "Votre nom d'utilisateur doit contenir au maximum 100 caractères")
      */
     private $username;
 
@@ -67,6 +72,13 @@ class User implements AdvancedUserInterface, \Serializable
      * @ORM\Column(name="is_active", type="boolean")
      */
     private $isActive;
+
+    /**
+     * @var Avatar
+     *
+     * @ORM\OneToOne(targetEntity="Snowtricks\PlatformBundle\Entity\Avatar", cascade={"persist", "remove"})
+     */
+    private $avatar;
 
     public function __construct()
     {
@@ -279,5 +291,29 @@ class User implements AdvancedUserInterface, \Serializable
     public function getIsActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * Set avatar.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Avatar|null $avatar
+     *
+     * @return User
+     */
+    public function setAvatar(\Snowtricks\PlatformBundle\Entity\Avatar $avatar = null)
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * Get avatar.
+     *
+     * @return \Snowtricks\PlatformBundle\Entity\Avatar|null
+     */
+    public function getAvatar()
+    {
+        return $this->avatar;
     }
 }

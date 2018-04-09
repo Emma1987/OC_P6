@@ -19,6 +19,7 @@ class AvatarType extends AbstractType
             ->add('file', FileType::class)
             ->add('save', SubmitType::class);
     }
+    
     /**
      * {@inheritdoc}
      */

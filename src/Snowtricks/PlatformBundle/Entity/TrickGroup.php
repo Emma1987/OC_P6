@@ -3,6 +3,7 @@
 namespace Snowtricks\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * TrickGroup
@@ -24,7 +25,13 @@ class TrickGroup
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=100, unique=true)
+     * @ORM\Column(name="name", type="string", length=50, unique=true)
+     * @Assert\Type("string")
+     * @Assert\Length(
+     *     min = 3, 
+     *     minMessage = "Le nom du groupe doit contenir au minimum 3 caractères", 
+     *     max = 50, 
+     *     maxMessage = "Le nom du groupe doit contenir au maximum 50 caractères")
      */
     private $name;
 
@@ -63,4 +70,3 @@ class TrickGroup
         return $this->name;
     }
 }
-

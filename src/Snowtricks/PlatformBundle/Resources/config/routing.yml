@@ -2,6 +2,10 @@ snowtricks_home:
     path:   /
     defaults: { _controller: SnowtricksPlatformBundle:Trick:index }
 
+snowtricks_all_tricks:
+    path:   /trick/all
+    defaults: { _controller: SnowtricksPlatformBundle:Trick:allTricks }
+
 snowtricks_add:
     path:   /trick/add
     defaults: { _controller: SnowtricksPlatformBundle:Trick:add }
@@ -25,6 +29,10 @@ snowtricks_view:
     requirements:
         slug: "[a-zA-Z0-9-]+"
 
+snowtricks_search:
+    path:   /trick/search
+    defaults: { _controller: SnowtricksPlatformBundle:Trick:search }
+
 snowtricks_image_remove:
     path:   /image/remove/{id}
     defaults: { _controller: SnowtricksPlatformBundle:Image:remove }
@@ -47,10 +55,6 @@ snowtricks_account:
     path:   /user/account
     defaults: { _controller: SnowtricksPlatformBundle:User:account }
 
-snowtricks_addavatar:
-    path:   /user/add-avatar
-    defaults: { _controller: SnowtricksPlatformBundle:User:addAvatar }
-
 snowtricks_resetpass:
     path:   /user/reset-password
     defaults: { _controller: SnowtricksPlatformBundle:User:resetPass }
@@ -58,6 +62,10 @@ snowtricks_resetpass:
 snowtricks_confirm_resetpass:
     path:   /user/confirm-reset-password/{userId}-{token}
     defaults: { _controller: SnowtricksPlatformBundle:User:confirmResetPass }
+
+snowtricks_addavatar:
+    path:   /user/add-avatar
+    defaults: { _controller: SnowtricksPlatformBundle:User:addAvatar }
 
 snowtricks_logout:
     path:   /logout

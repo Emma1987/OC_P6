@@ -27,7 +27,11 @@ class Trick
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=100, unique=true)
-     * @Assert\Length(min=3, minMessage="Le nom de la figure doit contenir au minimum 3 caractères", max=100, maxMessage="Le nom de la figure doit contenir au maximum 100 caractères")
+     * @Assert\Length(
+     *     min = 3, 
+     *     minMessage = "Le nom de la figure doit contenir au minimum 3 caractères", 
+     *     max = 100, 
+     *     maxMessage = "Le nom de la figure doit contenir au maximum 100 caractères")
      */
     private $name;
 
@@ -35,7 +39,11 @@ class Trick
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255)
-     * @Assert\Length(min=10, minMessage="La description doit contenir au minimum 10 caractères", max=100, maxMessage="La description doit contenir au maximum 255 caractères")
+     * @Assert\Length(
+     *     min = 10, 
+     *     minMessage = "La description doit contenir au minimum 10 caractères", 
+     *     max = 255, 
+     *     maxMessage = "La description doit contenir au maximum 255 caractères")
      */
     private $description;
 

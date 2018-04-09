@@ -17,9 +17,11 @@ class VideoType extends AbstractType
         $builder
             ->add('url', UrlType::class, array(
                 'attr'  => array(
-                    'placeholder' => 'Entrez le code iFrame fourni par le site'),
+                    'placeholder' => 'Entrez l\'URL de partage fournie par Youtube ou Dailymotion'),
                 'label' => false));
-    }/**
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function configureOptions(OptionsResolver $resolver)
@@ -36,6 +38,4 @@ class VideoType extends AbstractType
     {
         return 'snowtricks_platformbundle_video';
     }
-
-
 }

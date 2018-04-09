@@ -3,6 +3,7 @@
 namespace Snowtricks\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Message
@@ -24,14 +25,11 @@ class Message
     /**
      * @var string
      *
-     * @ORM\Column(name="author", type="string", length=255)
-     */
-    private $author;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="content", type="text")
+     * @ORM\Column(name="content", type="string", length=255)
+     * @Assert\Type("string")
+     * @Assert\Length(
+     *     max = 255,
+     *     maxMessage = "Le message doit être inférieur à 255 caractères")
      */
     private $content;
 
@@ -48,6 +46,12 @@ class Message
      */
     private $trick;
 
+    /**
+     * @var User
+     * @ORM\ManyToOne(targetEntity="Snowtricks\PlatformBundle\Entity\User")
+     */
+    private $user;
+
     public function __construct()
     {
         $this->messagePublished = new \Datetime();
@@ -61,30 +65,6 @@ class Message
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set author.
-     *
-     * @param string $author
-     *
-     * @return Message
-     */
-    public function setAuthor($author)
-    {
-        $this->author = $author;
-
-        return $this;
-    }
-
-    /**
-     * Get author.
-     *
-     * @return string
-     */
-    public function getAuthor()
-    {
-        return $this->author;
     }
 
     /**
@@ -141,5 +121,55 @@ class Message
     public function getTrick()
     {
         return $this->trick;
+    }
+
+    /**
+     * Add trick.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Trick $trick
+     *
+     * @return Message
+     */
+    public function addTrick(\Snowtricks\PlatformBundle\Entity\Trick $trick)
+    {
+        $this->trick[] = $trick;
+
+        return $this;
+    }
+
+    /**
+     * Remove trick.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Trick $trick
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeTrick(\Snowtricks\PlatformBundle\Entity\Trick $trick)
+    {
+        return $this->trick->removeElement($trick);
+    }
+
+    /**
+     * Set user.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\User|null $user
+     *
+     * @return Message
+     */
+    public function setUser(\Snowtricks\PlatformBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user.
+     *
+     * @return \Snowtricks\PlatformBundle\Entity\User|null
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }

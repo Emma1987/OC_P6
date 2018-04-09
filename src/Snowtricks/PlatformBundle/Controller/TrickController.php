@@ -1,8 +1,8 @@
 <?php
+
 namespace Snowtricks\PlatformBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Snowtricks\PlatformBundle\Entity\Trick;
 use Snowtricks\PlatformBundle\Entity\Image;
@@ -10,163 +10,196 @@ use Snowtricks\PlatformBundle\Entity\Message;
 use Snowtricks\PlatformBundle\Form\TrickType;
 use Snowtricks\PlatformBundle\Form\ImageType;
 use Snowtricks\PlatformBundle\Form\MessageType;
+use Snowtricks\PlatformBundle\Form\SearchType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class TrickController extends Controller
 {
-	public function indexAction()
-	{
-		$listTricks = $this
-			->getDoctrine()
-			->getManager()
-			->getRepository('SnowtricksPlatformBundle:Trick')
-			->findAll();
+    /**
+     * Return homepage view
+     */
+    public function indexAction()
+    {
+        $listTricks = $this
+            ->getDoctrine()
+            ->getManager()
+            ->getRepository('SnowtricksPlatformBundle:Trick')
+            ->findAll();
 
-		return $this->render('index.html.twig', array(
-			'listTricks' => $listTricks
-		));
-	}
+        return $this->render('index.html.twig', array(
+            'listTricks' => $listTricks
+        ));
+    }
 
-	public function showAction(Request $request)
-	{
-		$trick = $this
-			->getDoctrine()
-			->getManager()
-			->getRepository('SnowtricksPlatformBundle:Trick')
-			->findOneBySlug($request->attributes->get('slug'));
+    /**
+     * Return all tricks view and search form
+     * @param  Request $request
+     */
+    public function allTricksAction(Request $request)
+    {
+        $trickRepo = $this->getDoctrine()->getManager()->getRepository(Trick::class);
+        $searchForm = $this->createForm(SearchType::class);
 
-		// MESSAGE FORM
-		$message = new Message();
-		$messageForm = $this->createForm(MessageType::class, $message);
+        $searchForm->handleRequest($request);
+        if ($searchForm->isSubmitted() && $searchForm->isValid()) {
+            $trickName = htmlspecialchars($searchForm->getData()['trickName']);
+            $group = $searchForm->getData()['groupName'];
+            $listTricks = $trickRepo->search($trickName, $group);
+        } else {
+            $listTricks = $trickRepo->findAll();
+        }
 
-		if ($request->isMethod('POST')) {
-			$messageForm->handleRequest($request);
+        return $this->render('tricks/allTricks.html.twig', array(
+            'listTricks' => $listTricks,
+            'searchForm' => $searchForm->createView()
+        ));
+    }
 
-			if ($messageForm->isValid()) {
-				$em = $this->getDoctrine()->getManager();
-				$em->persist($message);
-				$trick->addMessage($message);
-				$em->flush();
+    /**
+     * View a single trick with its messages, and display form to post message
+     * @param  Request $request
+     */
+    public function showAction(Request $request)
+    {
+        $trickRepo = $this->getDoctrine()->getManager()->getRepository(Trick::class);
+        $trick = $trickRepo->findOneBySlug($request->attributes->get('slug'));
 
-				$request->getSession()->getFlashBag()->add('notice', 'Votre figure a bien été ajoutée !');
-				return $this->redirectToRoute('snowtricks_view', array(
-					'slug' => $trick->getSlug()
-				));
-			}
-		}
+        // MESSAGE FORM
+        $message = new Message();
+        $messageForm = $this->createForm(MessageType::class, $message);
 
-		// PAGINATION
-		$perPage = $this->container->getParameter('message.pagination');
-		$page = $request->query->get('page', 1);
+        $messageForm->handleRequest($request);
+        if ($messageForm->isSubmitted() && $messageForm->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($message);
+            $message->setUser($this->getUser());
+            $trick->addMessage($message);
+            $entityManager->flush();
 
-		$pagination = $this
-			->getDoctrine()
-			->getManager()
-			->getRepository('SnowtricksPlatformBundle:Message')
-			->paginator($trick->getId(), $page, $perPage);
+            $request->getSession()->getFlashBag()->add('success', 'Votre message a bien été ajouté !');
+            return $this->redirectToRoute('snowtricks_view', array(
+                'slug' => $trick->getSlug()
+            ));
+        }
 
-		$nbPages = ceil(count($pagination) / $perPage);
+        // PAGINATION
+        $perPage = $this->container->getParameter('message.pagination');
+        $page = $request->query->get('page', 1);
 
-		// VIEW
-		return $this->render('tricks/view.html.twig', array(
-			'trick' => $trick,
-			'images' => $trick->getImages(),
-			'videos' => $trick->getVideos(),
-			'messages' => $pagination,
-			'page' => $page,
-			'nbPages' => $nbPages,
-			'messageForm' => $messageForm->createView(),
-			
-		));
-	}
+        $messageRepo = $this->getDoctrine()->getManager()->getRepository(Message::class);
+        $pagination = $messageRepo->paginator($trick->getId(), $page, $perPage);
 
-	public function addAction(Request $request)
-	{
-		$trick = new Trick();
-		$trickForm = $this->createForm(TrickType::class, $trick);
+        $nbPages = ceil(count($pagination) / $perPage);
 
-		$trickForm->handleRequest($request);
+        // VIEW
+        return $this->render('tricks/view.html.twig', array(
+            'trick' => $trick,
+            'images' => $trick->getImages(),
+            'videos' => $trick->getVideos(),
+            'messages' => $pagination,
+            'page' => $page,
+            'nbPages' => $nbPages,
+            'messageForm' => $messageForm->createView(),
+        ));
+    }
 
-		if ($trickForm->isSubmitted() && $trickForm->isValid()) {
-			$em = $this->getDoctrine()->getManager();
-			$em->persist($trick);
-			$slug = $trick->createSlug($trick->getName());
-			$trick->setSlug($slug);
+    /**
+     * Add a new trick
+     * @param Request $request
+     *
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     */
+    public function addAction(Request $request)
+    {
+        $trick = new Trick();
+        $trickForm = $this->createForm(TrickType::class, $trick);
 
-			if (!empty($trickForm['images']->getData())) {
-				$files = $trickForm['images']->getData();
-				foreach ($files as $file) {
-					$image = new Image();
-					$trick->addImage($image);
-					$image->upload($file);
-				}
-			}
-			$em->flush();
+        $trickForm->handleRequest($request);
 
-			$request->getSession()->getFlashBag()->add('notice', 'Votre figure a bien été ajoutée !');
-			return $this->redirectToRoute('snowtricks_view', array(
-				'slug' => $trick->getSlug()
-			));
-		}
+        if ($trickForm->isSubmitted() && $trickForm->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($trick);
+            $slug = $trick->createSlug($trick->getName());
+            $trick->setSlug($slug);
 
-		return $this->render('tricks/add.html.twig', array(
-			'trickForm' => $trickForm->createView()
-		));
-	}
+            if (!empty($trickForm['images']->getData())) {
+                $files = $trickForm['images']->getData();
+                foreach ($files as $file) {
+                    $image = new Image();
+                    $trick->addImage($image);
+                    $image->upload($file);
+                }
+            }
+            $entityManager->flush();
 
-	public function updateAction(Request $request)
-	{
-		$trick = $this->getDoctrine()
-			->getManager()
-			->getRepository('SnowtricksPlatformBundle:Trick')
-			->findOneBySlug($request->attributes->get('slug'));
+            $request->getSession()->getFlashBag()->add('success', 'Votre figure a bien été ajoutée !');
+            return $this->redirectToRoute('snowtricks_view', array(
+                'slug' => $trick->getSlug()
+            ));
+        }
 
-		$trickForm = $this->createForm(TrickType::class, $trick);
+        return $this->render('tricks/add.html.twig', array(
+            'trickForm' => $trickForm->createView()
+        ));
+    }
 
-		$trickForm->handleRequest($request);
+    /**
+     * Update a trick
+     * @param  Request $request
+     *
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     */
+    public function updateAction(Request $request)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $trick = $entityManager->getRepository(Trick::class)->findOneBySlug($request->attributes->get('slug'));
 
-		if ($trickForm->isSubmitted() && $trickForm->isValid()) {
-			$em = $this->getDoctrine()->getManager();
-			$em->persist($trick);
-			$slug = $trick->createSlug($trick->getName());
-			$trick->setSlug($slug);
+        $trickForm = $this->createForm(TrickType::class, $trick);
 
-			if (!empty($trickForm['images']->getData())) {
-				$files = $trickForm['images']->getData();
-				foreach ($files as $file) {
-					$image = new Image();
-					$trick->addImage($image);
-					$image->upload($file);
-				}
-			}
-			$em->flush();
+        $trickForm->handleRequest($request);
+        if ($trickForm->isSubmitted() && $trickForm->isValid()) {
+            $slug = $trick->createSlug($trick->getName());
+            $trick->setSlug($slug);
 
-			$request->getSession()->getFlashBag()->add('notice', 'Votre figure a bien été modifiée !');
-			return $this->redirectToRoute('snowtricks_view', array(
-				'slug' => $trick->getSlug()
-			));
-		}
+            if (!empty($trickForm['images']->getData())) {
+                $files = $trickForm['images']->getData();
+                foreach ($files as $file) {
+                    $image = new Image();
+                    $trick->addImage($image);
+                    $image->upload($file);
+                }
+            }
+            $entityManager->flush();
 
-		return $this->render('tricks/update.html.twig', array(
-			'trickForm' => $trickForm->createView(),
-			'trick'		=> $trick,
-			'images'	=> $trick->getImages(),
-			'videos'	=> $trick->getVideos()
-		));
-	}
+            $request->getSession()->getFlashBag()->add('success', 'Votre figure a bien été modifiée !');
+            return $this->redirectToRoute('snowtricks_view', array(
+                'slug' => $trick->getSlug()
+            ));
+        }
 
-	public function deleteAction(Request $request)
-	{
-		$trick = $this
-			->getDoctrine()
-			->getManager()
-			->getRepository('SnowtricksPlatformBundle:Trick')
-			->findOneById($request->attributes->get('id'));
+        return $this->render('tricks/update.html.twig', array(
+            'trickForm' => $trickForm->createView(),
+            'trick'     => $trick,
+            'images'    => $trick->getImages(),
+            'videos'    => $trick->getVideos()
+        ));
+    }
 
-		$entityManager = $this->getDoctrine()->getManager();
-		$entityManager->remove($trick);
-		$entityManager->flush();
+    /**
+     * Delete a trick
+     * @param  Request $request
+     *
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     */
+    public function deleteAction(Request $request)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $trick = $entityManager->getRepository(Trick::class)->findOneById($request->attributes->get('id'));
 
-		$request->getSession()->getFlashBag()->add('notice', 'La figure a bien été supprimée.');
-		return $this->redirectToRoute('snowtricks_home');
-	}
+        $entityManager->remove($trick);
+        $entityManager->flush();
+
+        $request->getSession()->getFlashBag()->add('success', 'La figure a bien été supprimée.');
+        return $this->redirectToRoute('snowtricks_all_tricks');
+    }
 }

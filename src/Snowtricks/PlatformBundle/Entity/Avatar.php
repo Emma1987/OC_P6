@@ -3,6 +3,7 @@
 namespace Snowtricks\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -25,10 +26,18 @@ class Avatar
     /**
      * @var string|null
      *
-     * @ORM\Column(name="url", type="string", length=255, nullable=true)
+     * @ORM\Column(name="url", type="string", length=75, nullable=true)
+     * @Assert\Type("string")
      */
     private $url;
 
+    /**
+     * @Assert\Image(
+     *     maxSize = "1",
+     *     maxSizeMessage = "Trop grosse cette image !!!!",
+     *     mimeTypes = {"image/png", "image/jpeg", "image/jpg"},
+     *     mimeTypesMessage = "L'image doit être au format png, jpg ou jpeg.")
+     */
     private $file;
 
     public function upload($file, $username)
