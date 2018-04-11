@@ -4,6 +4,7 @@ namespace Snowtricks\PlatformBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Snowtricks\PlatformBundle\Entity\User;
 use Snowtricks\PlatformBundle\Entity\Avatar;
 use Snowtricks\PlatformBundle\Form\UserType;
@@ -21,6 +22,10 @@ class UserController extends Controller
      * @param  UserPasswordEncoderInterface $passwordEncoder
      * @param  \Swift_Mailer                $mailer
      * @param  TokenGenerator               $tokenGen        [Service used to generate a token]
+     *
+     * @Route(
+     *     "/user/register", 
+     *     name="snowtricks_register")
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, \Swift_Mailer $mailer, TokenGenerator $tokenGen)
     {
@@ -61,6 +66,10 @@ class UserController extends Controller
     /**
      * Get the url in the email to activate the account
      * @param  Request $request
+     *
+     * @Route(
+     *     "/user/confirm-register/{userId}-{token}", 
+     *     name="snowtricks_confirm_register")
      */
     public function confirmRegisterAction(Request $request)
     {
@@ -88,6 +97,10 @@ class UserController extends Controller
      * @param  Request        $request
      * @param  \Swift_Mailer  $mailer
      * @param  TokenGenerator $tokenGen [Service used to generate a token]
+     *
+     * @Route(
+     *     "/user/reset-password", 
+     *     name="snowtricks_resetpass")
      */
     public function resetPassAction(Request $request, \Swift_Mailer $mailer, TokenGenerator $tokenGen)
     {
@@ -113,7 +126,7 @@ class UserController extends Controller
                     ->setFrom('manue21x@gmail.com')
                     ->setTo($user->getEmail())
                     ->setBody(
-                        $this->renderView('emails/resetPass.html.twig', array(
+                        $this->renderView('emails/reset_pass.html.twig', array(
                             'name'  => $user->getUsername(),
                             'token' => $user->getToken(),
                             'userId' => $user->getId())),
@@ -123,7 +136,7 @@ class UserController extends Controller
                 $request->getSession()->getFlashBag()->add('success', 'Un mail vous a été envoyé !');
             }
         }
-        return $this->render('users/resetPasswordDemand.html.twig', array(
+        return $this->render('users/reset_pass_demand.html.twig', array(
             'userForm' => $userForm->createView()));
     }
 
@@ -131,6 +144,10 @@ class UserController extends Controller
      * Get the url in the email to update the password
      * @param  Request                      $request
      * @param  UserPasswordEncoderInterface $passwordEncoder
+     *
+     * @Route(
+     *     "/user/confirm-reset-password/{userId}-{token}", 
+     *     name="snowtricks_confirm_resetpass")
      */
     public function confirmResetPassAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
@@ -164,7 +181,7 @@ class UserController extends Controller
                 $request->getSession()->getFlashBag()->add('success', 'Votre mot de passe a bien été modifié !');
                 return $this->redirectToRoute('snowtricks_login');
             }
-            return $this->render('users/resetPasswordAction.html.twig', array(
+            return $this->render('users/reset_pass_action.html.twig', array(
                 'userForm' => $userForm->createView()));
         }
     }
@@ -173,6 +190,10 @@ class UserController extends Controller
      * Login action
      * @param  Request             $request
      * @param  AuthenticationUtils $authenticationUtils
+     *
+     * @Route(
+     *     "/login", 
+     *     name="snowtricks_login")
      */
     public function loginAction(Request $request, AuthenticationUtils $authenticationUtils)
     {
@@ -187,6 +208,21 @@ class UserController extends Controller
 
     /**
      * Logout action
+     *
+     * @Route(
+     *     "/logout", 
+     *     name="snowtricks_logout")
+     */
+    public function logoutAction()
+    {
+    }
+
+    /**
+     * View user account
+     *
+     * @Route(
+     *     "/user/account", 
+     *     name="snowtricks_account")
      *
      * @Security("is_granted('IS_AUTHENTICATED_REMEMBERED')")
      */

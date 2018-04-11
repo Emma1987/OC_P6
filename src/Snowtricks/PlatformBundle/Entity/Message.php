@@ -52,6 +52,8 @@ class Message
      */
     private $user;
 
+    const NUMBER_PAGINATION = 10;
+
     public function __construct()
     {
         $this->messagePublished = new \Datetime();

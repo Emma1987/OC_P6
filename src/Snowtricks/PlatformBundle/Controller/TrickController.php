@@ -4,6 +4,7 @@ namespace Snowtricks\PlatformBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Snowtricks\PlatformBundle\Entity\Trick;
 use Snowtricks\PlatformBundle\Entity\Image;
 use Snowtricks\PlatformBundle\Entity\Message;
@@ -17,23 +18,28 @@ class TrickController extends Controller
 {
     /**
      * Return homepage view
+     *
+     * @Route(
+     *     "/", 
+     *     name="snowtricks_home")
      */
     public function indexAction()
     {
-        $listTricks = $this
-            ->getDoctrine()
-            ->getManager()
-            ->getRepository('SnowtricksPlatformBundle:Trick')
-            ->findAll();
+        $trickRepo = $this->getDoctrine()->getManager()->getRepository(Trick::class);
+        $listTricks = $trickRepo->findAll();
 
-        return $this->render('index.html.twig', array(
-            'listTricks' => $listTricks
+        return $this->render('tricks/index.html.twig', array(
+            'listTricks' => $listTricks,
         ));
     }
 
     /**
      * Return all tricks view and search form
      * @param  Request $request
+     *
+     * @Route(
+     *     "/trick/all", 
+     *     name="snowtricks_all_tricks")
      */
     public function allTricksAction(Request $request)
     {
@@ -49,7 +55,7 @@ class TrickController extends Controller
             $listTricks = $trickRepo->findAll();
         }
 
-        return $this->render('tricks/allTricks.html.twig', array(
+        return $this->render('tricks/all_tricks.html.twig', array(
             'listTricks' => $listTricks,
             'searchForm' => $searchForm->createView()
         ));
@@ -58,6 +64,11 @@ class TrickController extends Controller
     /**
      * View a single trick with its messages, and display form to post message
      * @param  Request $request
+     *
+     * @Route(
+     *     "/tricks/{slug}", 
+     *     name="snowtricks_view", 
+     *     requirements={"slug"="[a-zA-Z0-9-]+"})
      */
     public function showAction(Request $request)
     {
@@ -83,7 +94,7 @@ class TrickController extends Controller
         }
 
         // PAGINATION
-        $perPage = $this->container->getParameter('message.pagination');
+        $perPage = Message::NUMBER_PAGINATION;
         $page = $request->query->get('page', 1);
 
         $messageRepo = $this->getDoctrine()->getManager()->getRepository(Message::class);
@@ -93,12 +104,12 @@ class TrickController extends Controller
 
         // VIEW
         return $this->render('tricks/view.html.twig', array(
-            'trick' => $trick,
-            'images' => $trick->getImages(),
-            'videos' => $trick->getVideos(),
-            'messages' => $pagination,
-            'page' => $page,
-            'nbPages' => $nbPages,
+            'trick'       => $trick,
+            'images'      => $trick->getImages(),
+            'videos'      => $trick->getVideos(),
+            'messages'    => $pagination,
+            'page'        => $page,
+            'nbPages'     => $nbPages,
             'messageForm' => $messageForm->createView(),
         ));
     }
@@ -106,6 +117,10 @@ class TrickController extends Controller
     /**
      * Add a new trick
      * @param Request $request
+     *
+     * @Route(
+     *     "/trick/add", 
+     *     name="snowtricks_add")
      *
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
@@ -115,7 +130,6 @@ class TrickController extends Controller
         $trickForm = $this->createForm(TrickType::class, $trick);
 
         $trickForm->handleRequest($request);
-
         if ($trickForm->isSubmitted() && $trickForm->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($trick);
@@ -146,6 +160,11 @@ class TrickController extends Controller
     /**
      * Update a trick
      * @param  Request $request
+     *
+     * @Route(
+     *     "/trick/update/{slug}", 
+     *     name="snowtricks_update", 
+     *     requirements={"slug"="[a-zA-Z0-9-]+"})
      *
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
@@ -188,6 +207,11 @@ class TrickController extends Controller
     /**
      * Delete a trick
      * @param  Request $request
+     *
+     * @Route(
+     *     "/trick/delete/{id}", 
+     *     name="snowtricks_delete", 
+     *     requirements={"id"="\d+"})
      *
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
