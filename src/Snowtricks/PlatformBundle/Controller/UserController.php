@@ -27,10 +27,15 @@ class UserController extends Controller
      *     "/user/register", 
      *     name="snowtricks_register")
      */
-    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, \Swift_Mailer $mailer, TokenGenerator $tokenGen)
+    public function registerAction(
+        Request $request, 
+        UserPasswordEncoderInterface $passwordEncoder, 
+        \Swift_Mailer $mailer, 
+        TokenGenerator $tokenGen)
     {
         $user = new User();
-        $userForm = $this->createForm(UserType::class, $user);
+        $userForm = $this->createForm(UserType::class, $user, array(
+            'validation_groups' => array('register')));
 
         $userForm->handleRequest($request);
         if ($userForm->isSubmitted() && $userForm->isValid()) {
@@ -80,16 +85,17 @@ class UserController extends Controller
             $request->getSession()->getFlashBag()->add('warning', 'Ce mail de confirmation n\'est associé à aucune demande de création de compte.');
             return $this->render('users/register.html.twig', array(
                 'userForm' => $this->createForm(UserType::class, $user)->createView()));
-        } else {
-            $user->setToken(null);
-            $user->setIsActive(true);
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush($user);
-
-            $request->getSession()->getFlashBag()->add('success', 'Votre inscription à bien été validée.');
-            return $this->redirectToRoute('snowtricks_login');
         }
+
+        $user->setToken(null);
+        $user->setIsActive(true);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->flush($user);
+
+        $request->getSession()->getFlashBag()->add('success', 'Votre inscription à bien été validée.');
+        return $this->redirectToRoute('snowtricks_login');
+
     }
 
     /**
@@ -151,39 +157,41 @@ class UserController extends Controller
      */
     public function confirmResetPassAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        $userRepo = $this->getDoctrine()->getManager()->getRepository(User::class);
-        $user = $userRepo->findOneById($request->attributes->get('userId'));
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $entityManager->getRepository(User::class)->findOneById($request->attributes->get('userId'));
+        $email = $user->getEmail();
 
-        if ($user == null || $user->getToken() != $request->attributes->get('token')) {
-            $request->getSession()->getFlashBag()->add('warning', 'Ce mail de confirmation n\'est pas valide.');
-            
-            $userForm = $this->createForm(UserType::class, $user, array(
-                'validation_groups' => array('resetPassDemand')));
-            $userForm->remove('email');
-            $userForm->remove('plainPassword');
+        $userForm = $this->createForm(UserType::class, $user, array(
+            'validation_groups' => array('resetPassAction')));
+        $userForm->remove('username');
 
-            return $this->redirectToRoute('snowtricks_resetpass', array(
-                'userForm' => $userForm->createView()));
-        } else {
-            $userForm = $this->createForm(UserType::class, $user, array(
-                'validation_groups' => array('resetPassAction')));
-            $userForm->remove('username');
+        if ($user == null || $user->getToken() == null || $user->getToken() != $request->attributes->get('token')) {
+            $request->getSession()->getFlashBag()->add('warning', 'Ce mail de réinitialisation n\'est pas valide.');
+            return $this->redirectToRoute('snowtricks_login');
+        }
 
-            $userForm->handleRequest($request);
-            if ($userForm->isSubmitted() && $userForm->isValid()) {
-                $user->setToken(null);
-                $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
-                $user->setPassword($password);
+        $userForm->handleRequest($request);
 
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->flush($user);
-
-                $request->getSession()->getFlashBag()->add('success', 'Votre mot de passe a bien été modifié !');
-                return $this->redirectToRoute('snowtricks_login');
-            }
+        if ($user->getEmail() != $email) {
+            $request->getSession()->getFlashBag()->add('warning', 'Je ne reconnais pas cet email...');
             return $this->render('users/reset_pass_action.html.twig', array(
                 'userForm' => $userForm->createView()));
         }
+
+        if ($userForm->isSubmitted() && $userForm->isValid() && $user->getToken() == $request->attributes->get('token')) {
+            $user->setToken(null);
+            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+            $user->setPassword($password);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush($user);
+
+            $request->getSession()->getFlashBag()->add('success', 'Votre mot de passe a bien été modifié !');
+            return $this->redirectToRoute('snowtricks_login');
+        }
+
+        return $this->render('users/reset_pass_action.html.twig', array(
+            'userForm' => $userForm->createView()));
     }
 
     /**

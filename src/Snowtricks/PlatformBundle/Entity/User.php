@@ -12,8 +12,8 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  *
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="Snowtricks\PlatformBundle\Repository\UserRepository")
- * @UniqueEntity(fields="email", message="Un compte existe déjà avec cet email.")
- * @UniqueEntity(fields="username", message="Ce nom d'utilisateur est déjà pris.")
+ * @UniqueEntity(fields="email", message="Un compte existe déjà avec cet email.", groups={"register"})
+ * @UniqueEntity(fields="username", message="Ce nom d'utilisateur est déjà pris.", groups={"register"})
  */
 class User implements AdvancedUserInterface, \Serializable
 {
@@ -30,12 +30,13 @@ class User implements AdvancedUserInterface, \Serializable
      * @var string
      *
      * @ORM\Column(name="username", type="string", length=50, unique=true)
-     * @Assert\NotBlank(groups={"resetPassDemand"})
+     * @Assert\NotBlank(groups={"register", "resetPassDemand"})
      * @Assert\Length(
      *     min = 3, 
      *     minMessage = "Votre nom d'utilisateur doit contenir au minimum 3 caractères", 
      *     max = 100, 
-     *     maxMessage = "Votre nom d'utilisateur doit contenir au maximum 100 caractères")
+     *     maxMessage = "Votre nom d'utilisateur doit contenir au maximum 100 caractères",
+     *     groups={"register", "resetPassDemand"})
      */
     private $username;
 
@@ -43,14 +44,18 @@ class User implements AdvancedUserInterface, \Serializable
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=100, unique=true)
-     * @Assert\NotBlank(groups={"resetPassAction"})
-     * @Assert\Email(groups={"resetPassAction"})
+     * @Assert\NotBlank(groups={"register", "resetPassAction"})
+     * @Assert\Email(groups={"register", "resetPassAction"})
      */
     private $email;
 
     /**
-     * @Assert\NotBlank(groups={"resetPassAction"})
-     * @Assert\Length(max=4096, groups={"resetPassAction"})
+     * @Assert\NotBlank(groups={"register", "resetPassAction"})
+     * @Assert\Length(
+     *     min = 6,
+     *     minMessage = "Le mot de passe doit être d'au minimum 6 caractères",
+     *     max = 4096,
+     *     groups={"register", "resetPassAction"})
      */
     private $plainPassword;
 
