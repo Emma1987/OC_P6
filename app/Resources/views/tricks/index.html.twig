@@ -9,18 +9,13 @@
 {% endblock background %}
 
 {% block body %}
-    <div class="list-group" role="tablist">
-        <a class="btn btn-light allTricks" id="listTricks" data-toggle="list" href="#tricks" role="tab">
-            <i class="fa fa-arrow-down fa-vc"></i>
-        </a>
-    </div>
-    <div class="container mt-5 mb-5">
-    <div class="tab-content">
-        <div class="container mt-5 mb-5">
-            <div class="" id="tricks" role="tabpanel" aria-labelledby="tricks">
-                {{ include('tricks/listTricks.html.twig') }}
-            </div>
-            <a class="btn btn-light text-center validButton" href="#tricks" id="loadMore">Voir plus</a>
+    <a class="btn btn-light allTricks" href="#tricks" role="tab">
+        <i class="fa fa-arrow-down fa-vc"></i>
+    </a>
+    <div class="container mt-5">
+        <div class="" id="tricks">
+            {{ include('tricks/_list_tricks.html.twig') }}
         </div>
+        <button class="btn btn-light text-center validButton mb-5" id="loadMore">Voir plus</button>
     </div>
 {% endblock body %}

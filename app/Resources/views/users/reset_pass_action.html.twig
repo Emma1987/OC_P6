@@ -1,0 +1,35 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Réinitialisez le mot de passe{% endblock title%}
+
+{% block body %}
+    <div class="extraSmallContent">
+        {{ include('_flash.html.twig') }}
+        <div class="card mb-5">
+            <div class="card-header">
+                <h2 class="text-center">Réinitialisez votre mot de passe</h2>
+            </div>
+            <div class="card-body">
+                {{ form_start(userForm) }}
+                {% if form_errors(userForm) is not empty %}
+                    <div class="alert alert-danger mt-2" role="alert">
+                        {{ form_errors(userForm) }}
+                    </div>
+                {% endif %}
+                <div class="list-group-item mb-2">
+                    <div class="form-group row">
+                        {{ form_label(userForm.email, 'Email de votre compte', {'label_attr': {'class': ''}}) }}
+                        {{ form_widget(userForm.email, {'attr': {'class': 'form-control', 'value': ''}}) }}
+                    </div>
+                    <div class="form-group row">
+                        {{ form_label(userForm.plainPassword, 'Mot de passe') }}
+                        {{ form_widget(userForm.plainPassword.first, {'attr': {'placeholder' : 'Entrez votre nouveau mot de passe', 'class': 'form-control'}}) }}
+                        {{ form_widget(userForm.plainPassword.second, {'attr': {'placeholder' : 'Confirmez votre nouveau mot de passe', 'class': 'form-control mt-1'}}) }}
+                    </div>
+                </div>
+                {{ form_widget(userForm.save, {'attr': {'class': 'btn btn-light'}, 'label' : 'Confirmer'}) }}
+                {{ form_end(userForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

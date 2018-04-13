@@ -3,32 +3,38 @@
 {% block title %}Créer un compte{% endblock title%}
 
 {% block body %}
-	<div class="extraSmallContent">
-		{{ include('flash.html.twig') }}
-		<div class="card mb-5">
-			<div class="card-header">
-   				<h2 class="text-center">Créer un compte</h2>
-			</div>
-			<div class="card-body">
-				{{ form_start(userForm) }}
-				{{ form_errors(userForm, {'attr': {'class': 'alert alert-danger'}}) }}
-				<div class="list-group-item mb-2">
+    <div class="extraSmallContent">
+        {{ include('_flash.html.twig') }}
+        <div class="card mb-5">
+            <div class="card-header">
+                <h2 class="text-center">Créer un compte</h2>
+            </div>
+            <div class="card-body">
+                {{ form_start(userForm) }}
+                {% if form_errors(userForm) is not empty %}
+                    <div class="alert alert-danger mt-2" role="alert">
+                        {{ form_errors(userForm) }}
+                    </div>
+                {% endif %}
+                <div class="list-group-item mb-2">
                     <div class="form-group row">
-                    	{{ form_label(userForm.username, 'Nom d\'utilisateur', {'label_attr': {'class': ''}}) }}
-                    	{{ form_widget(userForm.username, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_label(userForm.username, 'Nom d\'utilisateur') }}
+                        {{ form_widget(userForm.username, {'attr': {'class': 'form-control'}}) }}
                     </div>
                     <div class="form-group row">
-                    	{{ form_label(userForm.email, 'Votre mail', {'label_attr': {'class': ''}}) }}
-                    	{{ form_widget(userForm.email, {'attr': {'class': 'form-control'}}) }}
-					</div>
-					<div class="form-group row">
-						{{ form_widget(userForm.plainPassword, {'attr': {'class': 'form-control'}}) }}
-					</div>
-				</div>
-				{{ form_widget(userForm.save, {'attr': {'class': 'btn btn-light'}, 'label' : 'S\'enregistrer'}) }}
-				{{ form_rest(userForm) }}
-  				{{ form_end(userForm) }}
-			</div>
-		</div>
-	</div>
+                        {{ form_label(userForm.email, 'Votre mail') }}
+                        {{ form_widget(userForm.email, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                    <div class="form-group row">
+                        {{ form_label(userForm.plainPassword, 'Mot de passe') }}
+                        {{ form_widget(userForm.plainPassword.first, {'attr': {'placeholder' : 'Entrez votre mot de passe', 'class': 'form-control'}}) }}
+                        {{ form_widget(userForm.plainPassword.second, {'attr': {'placeholder' : 'Confirmez votre mot de passe', 'class': 'form-control mt-1'}}) }}
+                    </div>
+                </div>
+                {{ form_widget(userForm.save, {'attr': {'class': 'btn btn-light'}, 'label' : 'S\'enregistrer'}) }}
+                {{ form_rest(userForm) }}
+                {{ form_end(userForm) }}
+            </div>
+        </div>
+    </div>
 {% endblock body %}

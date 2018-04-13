@@ -1,0 +1,26 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Se connecter{% endblock title%}
+
+{% block body %}
+    <div class="extraSmallContent">
+        {{ include('_flash.html.twig') }}
+        <div class="card mb-5">
+            <div class="card-header">
+                <h2 class="text-center">Réinitialisez votre mot de passe</h2>
+            </div>
+            <div class="card-body">
+                {{ form_start(userForm) }}
+                {{ form_errors(userForm, {'attr': {'class': 'alert alert-danger'}}) }}
+                <div class="list-group-item mb-2 mt-2">
+                    <div class="form-group row">
+                        {{ form_label(userForm.username, 'Nom d\'utilisateur', {'label_attr': {'class': ''}}) }}
+                        {{ form_widget(userForm.username, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+                {{ form_widget(userForm.save, {'attr': {'class': 'btn btn-light mb-2'}, 'label' : 'Recevoir le mail'}) }}
+                {{ form_end(userForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
