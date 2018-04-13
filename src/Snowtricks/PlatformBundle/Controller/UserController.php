@@ -257,4 +257,25 @@ class UserController extends Controller
             'avatar'     => $this->getUser()->getAvatar()
         ));
     }
+
+    /**
+     * Delete user avatar
+     *
+     * @Route("/user/delete-avatar-{id}", name="snowtricks_delete_avatar")
+     *
+     * @Security("is_granted('IS_AUTHENTICATED_REMEMBERED')")
+     */
+    public function deleteAvatarAction(Request $request)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $avatar = $entityManager->getRepository(Avatar::class)->findOneById($request->attributes->get('id'));
+
+        $this->getUser()->setAvatar(null);
+        $entityManager->flush();
+
+        $entityManager->remove($avatar);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('snowtricks_account');
+    }
 }
