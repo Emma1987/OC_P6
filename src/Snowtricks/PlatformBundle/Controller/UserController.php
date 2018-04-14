@@ -14,6 +14,9 @@ use Snowtricks\PlatformBundle\Entity\Avatar;
 use Snowtricks\PlatformBundle\Form\UserType;
 use Snowtricks\PlatformBundle\Form\AvatarType;
 
+/**
+ * UserController
+ */
 class UserController extends Controller
 {
     /**
@@ -28,8 +31,9 @@ class UserController extends Controller
 
     /**
      * Register a new user and send an email to get a confirmation
-     * @param  Request                      $request
-     * @param  UserPasswordEncoderInterface $passwordEncoder
+     * 
+     * @param Request                      $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
      *
      * @Route(
      *     "/user/register", 
@@ -39,7 +43,8 @@ class UserController extends Controller
     {
         $user = new User();
         $userForm = $this->createForm(UserType::class, $user, array(
-            'validation_groups' => array('register')));
+            'validation_groups' => array('register')
+        ));
 
         $userForm->handleRequest($request);
         if ($userForm->isSubmitted() && $userForm->isValid()) {
@@ -52,18 +57,24 @@ class UserController extends Controller
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            $this->get('app.mail_sender')->sendMail('emails/registration.html.twig', 'Vous n\'êtes plus qu\'à un clic de notre communauté !', $user);
+            $this->get('app.mail_sender')->sendMail(
+                'emails/registration.html.twig', 
+                'Vous n\'êtes plus qu\'à un clic de notre communauté !', 
+                $user
+            );
 
             $request->getSession()->getFlashBag()->add('success', 'Un mail de confirmation vous a été envoyé');
         }
 
         return $this->render('users/register.html.twig', array(
-            'userForm' => $userForm->createView()));
+            'userForm' => $userForm->createView()
+        ));
     }
 
     /**
      * Get the url in the email to activate the account
-     * @param  Request $request
+     * 
+     * @param Request $request
      *
      * @Route(
      *     "/user/confirm-register/{userId}-{token}", 
@@ -89,7 +100,8 @@ class UserController extends Controller
 
     /**
      * Send a mail to reset the password
-     * @param  Request        $request
+     * 
+     * @param Request $request
      *
      * @Route(
      *     "/user/reset-password", 
@@ -99,7 +111,8 @@ class UserController extends Controller
     {
         $user = new User();
         $userForm = $this->createForm(UserType::class, $user, array(
-            'validation_groups' => array('resetPassDemand')));
+            'validation_groups' => array('resetPassDemand')
+        ));
         $userForm->remove('email');
         $userForm->remove('plainPassword');
 
@@ -114,7 +127,11 @@ class UserController extends Controller
 
                 $this->entityManager->flush($user);
 
-                $this->get('app.mail_sender')->sendMail('emails/reset_pass.html.twig', 'Votre demande de réinitialisation de mot de passe', $user);
+                $this->get('app.mail_sender')->sendMail(
+                    'emails/reset_pass.html.twig', 
+                    'Votre demande de réinitialisation de mot de passe', 
+                    $user
+                );
 
                 $request->getSession()->getFlashBag()->add('success', 'Un mail vous a été envoyé !');
             }
@@ -125,8 +142,9 @@ class UserController extends Controller
 
     /**
      * Get the url in the email to update the password
-     * @param  Request                      $request
-     * @param  UserPasswordEncoderInterface $passwordEncoder
+     * 
+     * @param Request                      $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
      *
      * @Route(
      *     "/user/confirm-reset-password/{userId}-{token}", 
@@ -138,7 +156,8 @@ class UserController extends Controller
         $email = $user->getEmail();
 
         $userForm = $this->createForm(UserType::class, $user, array(
-            'validation_groups' => array('resetPassAction')));
+            'validation_groups' => array('resetPassAction')
+        ));
         $userForm->remove('username');
 
         if ($user == null || $user->getToken() == null || $user->getToken() != $request->attributes->get('token')) {
@@ -151,7 +170,8 @@ class UserController extends Controller
         if ($user->getEmail() != $email) {
             $request->getSession()->getFlashBag()->add('warning', 'Je ne reconnais pas cet email...');
             return $this->render('users/reset_pass_action.html.twig', array(
-                'userForm' => $userForm->createView()));
+                'userForm' => $userForm->createView()
+            ));
         }
 
         if ($userForm->isSubmitted() && $userForm->isValid() && $user->getToken() == $request->attributes->get('token')) {
@@ -166,13 +186,15 @@ class UserController extends Controller
         }
 
         return $this->render('users/reset_pass_action.html.twig', array(
-            'userForm' => $userForm->createView()));
+            'userForm' => $userForm->createView()
+        ));
     }
 
     /**
      * Login action
-     * @param  Request             $request
-     * @param  AuthenticationUtils $authenticationUtils
+     * 
+     * @param Request             $request
+     * @param AuthenticationUtils $authenticationUtils
      *
      * @Route(
      *     "/login", 
@@ -215,7 +237,7 @@ class UserController extends Controller
         $avatarForm = $this->createForm(AvatarType::class, $avatar);
 
         $avatarForm->handleRequest($request);
-        if ($avatarForm->isSubmitted()) {
+        if ($avatarForm->isSubmitted() && $avatarForm->isValid()) {
             $avatar = new Avatar();
             $file = $avatarForm['file']->getData();
             $name = $this->getUser()->getUsername();
@@ -223,7 +245,7 @@ class UserController extends Controller
             $user = $this->getUser();
             $user->setAvatar($avatar);
 
-            $this->entityManager->flush($user);
+            $this->entityManager->flush();
         }
 
         return $this->render('users/account.html.twig', array(

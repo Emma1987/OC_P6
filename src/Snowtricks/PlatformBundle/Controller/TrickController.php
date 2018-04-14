@@ -15,6 +15,9 @@ use Snowtricks\PlatformBundle\Form\ImageType;
 use Snowtricks\PlatformBundle\Form\MessageType;
 use Snowtricks\PlatformBundle\Form\SearchType;
 
+/**
+ * TrickController
+ */
 class TrickController extends Controller
 {
     /**
@@ -45,7 +48,8 @@ class TrickController extends Controller
 
     /**
      * Return all tricks view and search form
-     * @param  Request $request
+     * 
+     * @param Request $request
      *
      * @Route(
      *     "/trick/all", 
@@ -72,7 +76,8 @@ class TrickController extends Controller
 
     /**
      * View a single trick with its messages, and display form to post message
-     * @param  Request $request
+     * 
+     * @param Request $request
      *
      * @Route(
      *     "/tricks/{slug}", 
@@ -118,6 +123,7 @@ class TrickController extends Controller
 
     /**
      * Add a new trick
+     * 
      * @param Request $request
      *
      * @Route(
@@ -160,7 +166,8 @@ class TrickController extends Controller
 
     /**
      * Update a trick
-     * @param  Request $request
+     * 
+     * @param Request $request
      *
      * @Route(
      *     "/trick/update/{slug}", 
@@ -204,7 +211,8 @@ class TrickController extends Controller
 
     /**
      * Delete a trick
-     * @param  Request $request
+     * 
+     * @param Request $request
      *
      * @Route(
      *     "/trick/delete/{id}", 

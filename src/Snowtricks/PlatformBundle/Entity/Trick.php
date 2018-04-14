@@ -106,7 +106,7 @@ class Trick
 
     public function createSlug($slug)
     {
-        $slug = mb_strtolower($slug,'UTF-8');
+        $slug = mb_strtolower($slug, 'UTF-8');
         $slug = \Normalizer::normalize($slug, \Normalizer::NFC);
 
         setlocale(LC_CTYPE, 'fr_FR');

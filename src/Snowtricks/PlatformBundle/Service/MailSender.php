@@ -9,18 +9,18 @@ use Snowtricks\PlatformBundle\Entity\User;
  */
 class MailSender
 {
-	protected $twig;
-	protected $mailer;
+    protected $twig;
+    protected $mailer;
 
-	public function __construct(\Twig_Environment $twig, \Swift_Mailer $mailer)
-	{
-		$this->twig = $twig;
-		$this->mailer = $mailer;
-	}
+    public function __construct(\Twig_Environment $twig, \Swift_Mailer $mailer)
+    {
+        $this->twig = $twig;
+        $this->mailer = $mailer;
+    }
 
-	public function sendMail($template, $object, User $user)
-	{
-		$message = (new \Swift_Message($object))
+    public function sendMail($template, $object, User $user)
+    {
+        $message = (new \Swift_Message($object))
             ->setFrom('manue21x@gmail.com')
             ->setTo($user->getEmail())
             ->setBody(
@@ -31,5 +31,5 @@ class MailSender
                 'text/html'
             );
         $this->mailer->send($message);
-	}
+    }
 }

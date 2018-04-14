@@ -7,11 +7,15 @@ use Symfony\Component\Routing\Annotation\Route;
 use Snowtricks\PlatformBundle\Entity\Image;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * ImageController
+ */
 class ImageController extends Controller
 {
     /**
      * Remove an image when updating trick
-     * @param  Request $request
+     * 
+     * @param Request $request
      *
      * @Route(
      *     "/image/remove/{id}", 
