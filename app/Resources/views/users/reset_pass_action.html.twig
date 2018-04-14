@@ -27,7 +27,7 @@
                         {{ form_widget(userForm.plainPassword.second, {'attr': {'placeholder' : 'Confirmez votre nouveau mot de passe', 'class': 'form-control mt-1'}}) }}
                     </div>
                 </div>
-                {{ form_widget(userForm.save, {'attr': {'class': 'btn btn-light'}, 'label' : 'Confirmer'}) }}
+                <button type="submit" class="btn btn-light">Confirmer</button>
                 {{ form_end(userForm) }}
             </div>
         </div>

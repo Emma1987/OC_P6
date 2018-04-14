@@ -16,9 +16,10 @@ class VideoType extends AbstractType
     {
         $builder
             ->add('url', UrlType::class, array(
-                'attr'  => array(
-                    'placeholder' => 'Entrez l\'URL de partage fournie par Youtube ou Dailymotion'),
-                'label' => false));
+                'attr'           => array(
+                    'placeholder'   => 'Entrez l\'URL de partage fournie par Youtube ou Dailymotion'),
+                'error_bubbling' => true,
+                'label'          => false));
     }
 
     /**

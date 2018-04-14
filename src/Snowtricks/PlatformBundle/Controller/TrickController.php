@@ -109,8 +109,6 @@ class TrickController extends Controller
         // VIEW
         return $this->render('tricks/view.html.twig', array(
             'trick'       => $trick,
-            'images'      => $trick->getImages(),
-            'videos'      => $trick->getVideos(),
             'messages'    => $pagination,
             'page'        => $page,
             'nbPages'     => $nbPages,
@@ -201,8 +199,6 @@ class TrickController extends Controller
         return $this->render('tricks/update.html.twig', array(
             'trickForm' => $trickForm->createView(),
             'trick'     => $trick,
-            'images'    => $trick->getImages(),
-            'videos'    => $trick->getVideos()
         ));
     }
 

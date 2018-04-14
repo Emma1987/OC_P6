@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block updateImage %}
-    {% if images is not empty %}
+    {% if trick.images is not empty %}
         <div class="row justify-content-end">
             <div class="col-sm-8">
                 <div class="row">
-                    {% for image in images %}
+                    {% for image in trick.images %}
                         <div class="col-sm-3 updateImage">
                             <img src="{{ asset(image.url) }}" alt="">
                             <a href="{{ path('snowtricks_image_remove', {'id': image.id}) }}"><em>Supprimer cette image</em></a>
@@ -22,13 +22,13 @@
 {% endblock %}
 
 {% block return %}
-    <button id="return" href="{{ path('snowtricks_view', {'slug': trick.slug}) }}" class="btn btn-light">
+    <a id="return" href="{{ path('snowtricks_view', {'slug': trick.slug}) }}" class="btn btn-light">
         <i class="fa fa-chevron-left" aria-hidden="true"></i> Retour à la figure
-    </button>
+    </a>
 {% endblock %}
 
 {% block delete %}
-    <button id="return" href="{{ path('snowtricks_view', {'slug': trick.slug}) }}" class="btn btn-light deleteButton">
+    <a id="return" href="{{ path('snowtricks_view', {'slug': trick.slug}) }}" class="btn btn-light deleteButton">
         <i class="fa fa-trash-o" aria-hidden="true"></i> Supprimer cette figure
-    </button>
+    </a>
 {% endblock %}
