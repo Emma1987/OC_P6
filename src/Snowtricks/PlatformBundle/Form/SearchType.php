@@ -7,7 +7,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class SearchType extends AbstractType
 {
@@ -25,8 +24,7 @@ class SearchType extends AbstractType
                 'placeholder' => 'Ou sélectionnez un groupe',
                 'required' => false,
                 'expanded' => false,
-                'multiple' => false))
-            ->add('save', SubmitType::class);
+                'multiple' => false));
     }
 
     /**

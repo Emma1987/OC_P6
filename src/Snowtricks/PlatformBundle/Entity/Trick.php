@@ -79,18 +79,20 @@ class Trick
     /**
      * @var Image[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Image", mappedBy="trick", cascade={"persist", "remove"})
+     * @Assert\Valid()
      */
     private $images;
 
     /**
      * @var Video[]|ArrayCollection
      * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Video", cascade={"persist", "remove"})
+     * @Assert\Valid()
      */
     private $videos;
 
     /**
      * @var Message[]|ArrayCollection
-     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Message", inversedBy="trick", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Message", mappedBy="trick", cascade={"persist", "remove"})
      */
     private $messages;
 
@@ -104,7 +106,7 @@ class Trick
 
     public function createSlug($slug)
     {
-        $slug = mb_strtolower($slug,'UTF-8');
+        $slug = mb_strtolower($slug, 'UTF-8');
         $slug = \Normalizer::normalize($slug, \Normalizer::NFC);
 
         setlocale(LC_CTYPE, 'fr_FR');

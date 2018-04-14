@@ -50,29 +50,32 @@ class Image
 
     /**
      * @Assert\Image(
-     *     maxSize = "1",
-     *     maxSizeMessage = "Trop grosse cette image !!!!",
+     *     maxSize = "1024k",
+     *     maxSizeMessage = "Le poids de l'image doit être inférieur à 1Mo",
      *     mimeTypes = {"image/png", "image/jpeg", "image/jpg"},
      *     mimeTypesMessage = "L'image doit être au format png, jpg ou jpeg.")
      */
-    private $files;
+    public $files;
 
-    public function upload($file)
+    /**
+     * Upload the image 
+     */
+    public function upload($file, Trick $trick)
     {
         if (null === $file) {
             return;
         }
 
-        $name = $this->trick->getSlug().'-'.random_int(1, 10000);
-        $this->url = 'uploads/'.$name;
-        $this->alt = 'Figure snowboard'.' '.$this->trick->getName();
+        $name = $trick->getSlug().'-'.random_int(1, 10000);
+        $this->url = 'uploads/tricks/'.$name;
+        $this->alt = 'Figure snowboard'.' '.$trick->getName();
 
         $file->move($this->getUploadRootDir(), $name);
     }
 
     public function getUploadDir()
     {
-        return 'uploads';
+        return 'uploads/tricks';
     }
 
     protected function getUploadRootDir()
@@ -162,6 +165,11 @@ class Image
         return $this->trick;
     }
 
+    /**
+     * Set file
+     * 
+     * @param UploadedFile $file
+     */
     public function setFile(UploadedFile $file)
     {
         $this->files = new ArrayCollection($file);
@@ -169,8 +177,11 @@ class Image
         return $this;
     }
 
-    public function getFile()
+    /**
+     * Get file
+     */
+    public function getFiles()
     {
-        return $this->file;
+        return $this->files;
     }
 }

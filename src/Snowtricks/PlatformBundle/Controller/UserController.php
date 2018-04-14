@@ -3,69 +3,78 @@
 namespace Snowtricks\PlatformBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Snowtricks\PlatformBundle\Entity\User;
 use Snowtricks\PlatformBundle\Entity\Avatar;
 use Snowtricks\PlatformBundle\Form\UserType;
 use Snowtricks\PlatformBundle\Form\AvatarType;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Snowtricks\PlatformBundle\Service\TokenGenerator;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+/**
+ * UserController
+ */
 class UserController extends Controller
 {
     /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    /**
      * Register a new user and send an email to get a confirmation
-     * @param  Request                      $request
-     * @param  UserPasswordEncoderInterface $passwordEncoder
-     * @param  \Swift_Mailer                $mailer
-     * @param  TokenGenerator               $tokenGen        [Service used to generate a token]
+     * 
+     * @param Request                      $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
      *
      * @Route(
      *     "/user/register", 
      *     name="snowtricks_register")
      */
-    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, \Swift_Mailer $mailer, TokenGenerator $tokenGen)
+    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
         $user = new User();
-        $userForm = $this->createForm(UserType::class, $user);
+        $userForm = $this->createForm(UserType::class, $user, array(
+            'validation_groups' => array('register')
+        ));
 
         $userForm->handleRequest($request);
         if ($userForm->isSubmitted() && $userForm->isValid()) {
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
 
-            $token = $tokenGen->generateToken(60);
+            $token = $this->get('app.token_generator')->generateToken(60);
             $user->setToken($token);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
 
-            $message = (new \Swift_Message('Vous n\'êtes plus qu\'à un clic de notre communauté !'))
-                ->setFrom('email@example.com')
-                ->setTo($user->getEmail())
-                ->setBody(
-                    $this->renderView('emails/registration.html.twig', array(
-                        'name'  => $user->getUsername(),
-                        'token' => $user->getToken(),
-                        'userId' => $user->getId())),
-                    'text/html'
-                );
-            $mailer->send($message);
+            $this->get('app.mail_sender')->sendMail(
+                'emails/registration.html.twig', 
+                'Vous n\'êtes plus qu\'à un clic de notre communauté !', 
+                $user
+            );
 
             $request->getSession()->getFlashBag()->add('success', 'Un mail de confirmation vous a été envoyé');
         }
 
         return $this->render('users/register.html.twig', array(
-            'userForm' => $userForm->createView()));
+            'userForm' => $userForm->createView()
+        ));
     }
 
     /**
      * Get the url in the email to activate the account
-     * @param  Request $request
+     * 
+     * @param Request $request
      *
      * @Route(
      *     "/user/confirm-register/{userId}-{token}", 
@@ -73,66 +82,57 @@ class UserController extends Controller
      */
     public function confirmRegisterAction(Request $request)
     {
-        $userRepo = $this->getDoctrine()->getManager()->getRepository(User::class);
-        $user = $userRepo->findOneById($request->attributes->get('userId'));
+        $user = $this->entityManager->getRepository(User::class)->findOneById($request->attributes->get('userId'));
 
         if ($user == null || $user->getToken() != $request->attributes->get('token')) {
-            $request->getSession()->getFlashBag()->add('warning', 'Ce mail de confirmation n\'est associé à aucune demande de création de compte.');
-            return $this->render('users/register.html.twig', array(
-                'userForm' => $this->createForm(UserType::class, $user)->createView()));
-        } else {
-            $user->setToken(null);
-            $user->setIsActive(true);
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush($user);
-
-            $request->getSession()->getFlashBag()->add('success', 'Votre inscription à bien été validée.');
-            return $this->redirectToRoute('snowtricks_login');
+            $request->getSession()->getFlashBag()->add('warning', 'Ce mail de confirmation n\'est associé à aucun compte.');
+            return $this->redirectToRoute('snowtricks_register');
         }
+
+        $user->setToken(null);
+        $user->setIsActive(true);
+
+        $this->entityManager->flush($user);
+
+        $request->getSession()->getFlashBag()->add('success', 'Votre inscription à bien été validée.');
+        return $this->redirectToRoute('snowtricks_login');
     }
 
     /**
      * Send a mail to reset the password
-     * @param  Request        $request
-     * @param  \Swift_Mailer  $mailer
-     * @param  TokenGenerator $tokenGen [Service used to generate a token]
+     * 
+     * @param Request $request
      *
      * @Route(
      *     "/user/reset-password", 
      *     name="snowtricks_resetpass")
      */
-    public function resetPassAction(Request $request, \Swift_Mailer $mailer, TokenGenerator $tokenGen)
+    public function resetPassAction(Request $request)
     {
         $user = new User();
         $userForm = $this->createForm(UserType::class, $user, array(
-            'validation_groups' => array('resetPassDemand')));
+            'validation_groups' => array('resetPassDemand')
+        ));
         $userForm->remove('email');
         $userForm->remove('plainPassword');
 
         $userForm->handleRequest($request);
         if ($userForm->isSubmitted() && $userForm->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $user = $entityManager->getRepository(User::class)->findOneByUsername($userForm->getData()->getUsername());
+            $user = $this->entityManager->getRepository(User::class)->findOneByUsername($userForm->getData()->getUsername());
             if ($user == null) {
                 $request->getSession()->getFlashBag()->add('warning', 'Ce nom dutilisateur ne me dit rien...');
             } else {
-                $token = $tokenGen->generateToken(60);
+                $token = $this->get('app.token_generator')->generateToken(60);
                 $user->setToken($token);
 
-                $entityManager->flush($user);
+                $this->entityManager->flush($user);
 
-                $message = (new \Swift_Message('Votre demande de réinitialisation de mot de passe'))
-                    ->setFrom('manue21x@gmail.com')
-                    ->setTo($user->getEmail())
-                    ->setBody(
-                        $this->renderView('emails/reset_pass.html.twig', array(
-                            'name'  => $user->getUsername(),
-                            'token' => $user->getToken(),
-                            'userId' => $user->getId())),
-                        'text/html'
+                $this->get('app.mail_sender')->sendMail(
+                    'emails/reset_pass.html.twig', 
+                    'Votre demande de réinitialisation de mot de passe', 
+                    $user
                 );
-                $mailer->send($message);
+
                 $request->getSession()->getFlashBag()->add('success', 'Un mail vous a été envoyé !');
             }
         }
@@ -142,8 +142,9 @@ class UserController extends Controller
 
     /**
      * Get the url in the email to update the password
-     * @param  Request                      $request
-     * @param  UserPasswordEncoderInterface $passwordEncoder
+     * 
+     * @param Request                      $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
      *
      * @Route(
      *     "/user/confirm-reset-password/{userId}-{token}", 
@@ -151,45 +152,49 @@ class UserController extends Controller
      */
     public function confirmResetPassAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        $userRepo = $this->getDoctrine()->getManager()->getRepository(User::class);
-        $user = $userRepo->findOneById($request->attributes->get('userId'));
+        $user = $this->entityManager->getRepository(User::class)->findOneById($request->attributes->get('userId'));
+        $email = $user->getEmail();
 
-        if ($user == null || $user->getToken() != $request->attributes->get('token')) {
-            $request->getSession()->getFlashBag()->add('warning', 'Ce mail de confirmation n\'est pas valide.');
-            
-            $userForm = $this->createForm(UserType::class, $user, array(
-                'validation_groups' => array('resetPassDemand')));
-            $userForm->remove('email');
-            $userForm->remove('plainPassword');
+        $userForm = $this->createForm(UserType::class, $user, array(
+            'validation_groups' => array('resetPassAction')
+        ));
+        $userForm->remove('username');
 
-            return $this->redirectToRoute('snowtricks_resetpass', array(
-                'userForm' => $userForm->createView()));
-        } else {
-            $userForm = $this->createForm(UserType::class, $user, array(
-                'validation_groups' => array('resetPassAction')));
-            $userForm->remove('username');
-
-            $userForm->handleRequest($request);
-            if ($userForm->isSubmitted() && $userForm->isValid()) {
-                $user->setToken(null);
-                $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
-                $user->setPassword($password);
-
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->flush($user);
-
-                $request->getSession()->getFlashBag()->add('success', 'Votre mot de passe a bien été modifié !');
-                return $this->redirectToRoute('snowtricks_login');
-            }
-            return $this->render('users/reset_pass_action.html.twig', array(
-                'userForm' => $userForm->createView()));
+        if ($user == null || $user->getToken() == null || $user->getToken() != $request->attributes->get('token')) {
+            $request->getSession()->getFlashBag()->add('warning', 'Ce mail de réinitialisation n\'est pas valide.');
+            return $this->redirectToRoute('snowtricks_login');
         }
+
+        $userForm->handleRequest($request);
+
+        if ($user->getEmail() != $email) {
+            $request->getSession()->getFlashBag()->add('warning', 'Je ne reconnais pas cet email...');
+            return $this->render('users/reset_pass_action.html.twig', array(
+                'userForm' => $userForm->createView()
+            ));
+        }
+
+        if ($userForm->isSubmitted() && $userForm->isValid() && $user->getToken() == $request->attributes->get('token')) {
+            $user->setToken(null);
+            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+            $user->setPassword($password);
+
+            $this->entityManager->flush($user);
+
+            $request->getSession()->getFlashBag()->add('success', 'Votre mot de passe a bien été modifié !');
+            return $this->redirectToRoute('snowtricks_login');
+        }
+
+        return $this->render('users/reset_pass_action.html.twig', array(
+            'userForm' => $userForm->createView()
+        ));
     }
 
     /**
      * Login action
-     * @param  Request             $request
-     * @param  AuthenticationUtils $authenticationUtils
+     * 
+     * @param Request             $request
+     * @param AuthenticationUtils $authenticationUtils
      *
      * @Route(
      *     "/login", 
@@ -232,7 +237,7 @@ class UserController extends Controller
         $avatarForm = $this->createForm(AvatarType::class, $avatar);
 
         $avatarForm->handleRequest($request);
-        if ($avatarForm->isSubmitted()) {
+        if ($avatarForm->isSubmitted() && $avatarForm->isValid()) {
             $avatar = new Avatar();
             $file = $avatarForm['file']->getData();
             $name = $this->getUser()->getUsername();
@@ -240,13 +245,32 @@ class UserController extends Controller
             $user = $this->getUser();
             $user->setAvatar($avatar);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush($user);
+            $this->entityManager->flush();
         }
 
         return $this->render('users/account.html.twig', array(
             'avatarForm' => $avatarForm->createView(),
             'avatar'     => $this->getUser()->getAvatar()
         ));
+    }
+
+    /**
+     * Delete user avatar
+     *
+     * @Route("/user/delete-avatar-{id}", name="snowtricks_delete_avatar")
+     *
+     * @Security("is_granted('IS_AUTHENTICATED_REMEMBERED')")
+     */
+    public function deleteAvatarAction(Request $request)
+    {
+        $avatar = $this->entityManager->getRepository(Avatar::class)->findOneById($request->attributes->get('id'));
+
+        $this->getUser()->setAvatar(null);
+        $this->entityManager->flush();
+
+        $this->entityManager->remove($avatar);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('snowtricks_account');
     }
 }

@@ -42,13 +42,15 @@ class Message
 
     /**
      * @var Trick
-     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Trick", mappedBy="messages")
+     * @ORM\ManyToOne(targetEntity="Snowtricks\PlatformBundle\Entity\Trick", inversedBy="messages")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $trick;
 
     /**
      * @var User
      * @ORM\ManyToOne(targetEntity="Snowtricks\PlatformBundle\Entity\User")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $user;
 
