@@ -34,7 +34,10 @@
                         {{ form_widget(trickForm.trickgroup, {'attr': {'class': 'col-sm-8 col-xs-12 form-control'}}) }}
                     </div>
                 </div>
-                <div class="list-group-item mb-2">
+                <div class="list-group-item updateMediasButton mb-2">
+                    <a class="btn btn-info updateMediasAction w-100">Mettre à jour les images et vidéos</a>
+                </div>
+                <div class="list-group-item updateMediasBlock mb-2">
                     {% block updateImage %}{% endblock %}
                     <div class="form-group row">
                         {{ form_label(trickForm.images, 'Image(s)', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}

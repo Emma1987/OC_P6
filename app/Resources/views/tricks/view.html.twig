@@ -48,12 +48,12 @@
             </div>
 
             <!-- OTHER MEDIAS -->
-            <div class="row">
+            <div class="row otherMedias">
                 <div class="otherImages col-sm-6">
                     {% if trick.images is not empty %}
                         <div class="row">
                             {% for image in trick.images|slice(1, 2) %}
-                                <div class="col-sm-6 pt-1">
+                                <div class="col-sm-6 col-xs-4 pt-1">
                                     <img src="{{ asset(image.url) }}" alt="{{ image.alt }}" />
                                 </div>
                             {% endfor %}
@@ -157,14 +157,14 @@
             {% else %}
                 {% for message in trick.messages %}
                     <div class="row">
-                        <div class="avatarChat col-1">
+                        <div class="avatarChat col-2 col-sm-1">
                             {% if message.user.avatar is not empty %}
                                 <img src ="{{ asset(message.user.avatar.url) }}" alt="avatar">
                             {% else %}
                                 <img src ="{{ asset('uploads/avatars/avatar_defaut.png') }}" alt="avatar">
                             {% endif %}
                         </div>
-                        <div class="col-11">
+                        <div class="col-10">
                             <em> Posté par {{ message.user.username }} le {{ message.messagePublished|date("d F Y", "Europe/Paris") }}</em><br />
                             Contenu : {{ message.content }} <hr />
                         </div>

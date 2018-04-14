@@ -1,43 +1,59 @@
+/* GLOBAL
+============================================================ */
 body
 {
     font-family: 'PT Sans';
 }
 
-p, em
+p, em, .form-control, label, .btn, .card-body a, .alert li, input
 {
     font-size: 16px;
+}
+
+.form-group
+{
+    margin-bottom: 8px;
 }
 
 h1, h2
 {
     font-size: 19px;
+    margin-bottom: 0px;
+}
+
+a
+{
+    color:grey;
 }
 
 a:hover
 {
-    color: #18BC9C;
+    color: rgb(112, 169, 244);
 }
 
-a.name, p.catchSentence
+.btn-light
 {
-    font-family: 'Nova Mono', Arial;
-    font-size: 2em;
+    border-color: rgba(0,0,0,.125);
 }
 
-a.name
+a i
 {
-    text-decoration: none;
     color: grey;
 }
 
-p.catchSentence
+a i:hover, .btn-group.trickButtons i:hover
 {
-    position: absolute;
-    top: 550px;
-    right: 25%;
-    width: 50%;
-    color: #18BC9C;
-    text-align: center;
+    color: rgb(112, 169, 244);
+}
+
+/* HOMEPAGE
+============================================================ */
+a.name
+{
+    font-family: 'Nova Mono', Arial;
+    font-size: 2em;
+    text-decoration: none;
+    color: grey;
 }
 
 header
@@ -53,16 +69,34 @@ header
     right: 50px;
 }
 
-.backgroundImage
+.dropdown-menu
+{
+    font-size: 16px;
+    text-align: right;
+    border: none;
+    padding: 0;
+}
+
+div.backgroundImage
 {
     margin:0;
     padding:0;
-    background: url('../../web/img/background.jpg') no-repeat center;
-    height: 700px;
+    background: url('../../web/img/planche.jpg') no-repeat center;
+    height: 760px;
+    width: 100%;
     -webkit-background-size: cover; /* pour anciens Chrome et Safari */
     background-size: cover; /* version standardisée */
-    color: black;
-    font-size: 20px;
+}
+
+p.catchSentence
+{
+    font-family: 'Nova Mono', Arial;
+    font-size: 35px;
+    font-style: italic;
+    padding-top: 350px;
+    color: rgb(112, 169, 244);
+    text-shadow: 1px 0 0 black, 0 1px 0 black, 0 -1px 0 black, -1px 0 0 black, 1px 1px 0 black, 1px -1px 0 black, -1px 1px 0 black, -1px -1px 0 black;
+    text-align: center;
 }
 
 .btn.allTricks
@@ -71,67 +105,60 @@ header
     height: 40px;
     position: absolute;
     right: 40px;
-    bottom: 50px;
+    top: 630px;
     padding: 8px;
+    background: none;
 }
 
-.btn.allTricks i
+.btn.allTricks i, .scrollTopButton i
 {
     color: black;
     font-size: 25px;
 }
 
-/* responsively enforce wrapping */
-.card-deck span 
+.btn.scrollTopButton
+{
+    width: 40px;
+    height: 40px;
+    position: fixed;
+    right: 40px;
+    bottom: 40px;
+    padding: 8px;
+    background: none;
+    display: none;
+}
+
+.homeTrick img
+{
+    max-width: 100%;
+}
+
+#tricks .homeTrick, #loadMore
 {
     display: none;
 }
 
-@media (min-width:1200px)
-{
-    .card-deck span:nth-of-type(5n) {
-    display: block;
-    width: 100%;
-    }
-}
-
-@media (min-width:992px) and (max-width: 1199px) 
-{
-    .card-deck span:nth-of-type(4n) {
-    display: block;
-    width: 100%;
-    }
-}
-
-@media (min-width:768px) and (max-width: 991px) 
-{
-    .card-deck span:nth-of-type(3n) {
-    display: block;
-    width: 100%;
-    }
-}
-
-@media (min-width: 576px) and (max-width: 767px) 
-{
-    .card-deck span:nth-of-type(2n) {
-    display: block;
-    width: 100%;
-    }
-}
-
-/* VIEW */
+/* VIEW
+============================================================ */
 .content
 {
-    width: 70%;
+    width: 95%;
     margin: auto;
     padding: 130px 0 0 0px;
 }
 
-.discuss
+.smallContent
 {
     width: 70%;
     margin: auto;
-    padding-bottom: 50px;
+    padding: 130px 0 0 0;
+}
+
+.extraSmallContent
+{
+    width: 50%;
+    margin: auto;
+    padding: 130px 0 0 0;    
 }
 
 .coverImage
@@ -148,32 +175,39 @@ header
     z-index: 1;
 }
 
-.coverImage img
+.btn-group.trickButtons, .btn-group.trickButtons a.btn.btn-outline-secondary
+{
+    border-radius: 0;
+    border-color: black;
+    background-color: rgba(112, 169, 244, 0.15);
+}
+
+.btn-group.trickButtons i
+{
+    color: black;
+}
+
+.coverImage img, .otherImages img, .updateImage img
 {
     max-width: 100%;
 }
 
-.otherImages img
-{
-    max-width: 100%;
-}
-
-div.video
-{
-    max-width: 200px;
-}
-
-div.snowtricks_platformbundle_trick_images-collection-actions, div.snowtricks_platformbundle_trick_videos-collection-actions
+div.snowtricks_platformbundle_trick_images-collection-actions, 
+div.snowtricks_platformbundle_trick_videos-collection-actions,
+div.trick_edit_images-collection-actions,
+div.trick_edit_videos-collection-actions,
+div#snowtricks_platformbundle_trick_images label
 {
     display: none;
 }
 
-div#snowtricks_platformbundle_trick_videos input
+div#snowtricks_platformbundle_trick_videos input,
+div#trick_edit_videos input
 {
     display: block;
     width: 100%;
     padding: .375rem .75rem;
-    font-size: 1rem;
+    font-size: 16px;
     line-height: 1.5;
     color: #495057;
     background-color: #fff;
@@ -183,21 +217,208 @@ div#snowtricks_platformbundle_trick_videos input
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
-button#snowtricks_platformbundle_trick_save
+.validationButtons .btn
 {
-    width: 250px;
+    width: 200px;
     border-color: rgba(0,0,0,.125);
 }
 
-button#snowtricks_platformbundle_message_save
+.trickViewCard,  .trickViewCard .card-header
 {
-    border-color: rgba(0,0,0,.125);
+    border-radius: 0;
 }
 
-div.videos iframe
+.card-header
 {
-    max-width: 100%;
-    max-height: 150px;
+    background-color: rgba(112, 169, 244, 0.5);
 }
 
+.card-body
+{
+    padding: 5px 10px;
+}
 
+.validButton:hover
+{
+    background-color: rgba(66, 244, 134, 0.3);
+}
+
+.deleteButton:hover
+{
+    background-color: rgba(239, 57, 102, 0.3);
+}
+
+.updateButtons
+{
+    text-align: right;
+}
+
+.alert ul
+{
+    list-style: none;
+    margin: 0;
+}
+
+.avatarChat img
+{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+/* ACCOUNT
+============================================================ */
+.avatar img
+{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+/* OTHERS
+============================================================ */
+.errorImage
+{
+    width: 100%;
+}
+
+/* MEDIA QUERIES
+============================================================ */
+.card-deck span 
+{
+    display: none;
+}
+
+@media (min-width:992px)
+{
+    .card-deck span:nth-of-type(5n) {
+        display: block;
+        width: 100%;
+    }
+
+    div.card.homeTrick {
+        max-width: 17%;
+    }
+}
+
+@media (min-width:768px) and (max-width: 991px) 
+{
+    .card-deck span:nth-of-type(3n) {
+    display: block;
+    width: 100%;
+    }
+}
+
+@media (min-width: 768px)
+{
+    nav.navbarMobile, .logoMobile {
+        display: none;
+    }
+
+    html {
+        position: relative;
+        min-height: 100%;
+    }
+
+    .content, .smallContent, .extraSmallContent, .discuss {
+        padding-bottom: 100px;
+    }
+
+    div.updateMediasButton {
+        display: none;
+    }
+
+    footer {
+        background-color: rgba(205, 210, 216, 0.3);
+        position: absolute;
+        bottom: 0;
+        height: 40px;
+        z-index: 1;
+        color: #bbc1c9;
+    }
+
+    footer a {
+        color: #bbc1c9;
+    }
+}
+
+@media (max-width: 767px) 
+{
+    body {
+        padding-bottom: 70px;
+    }
+
+    div.backgroundImage {
+        background: url('../../web/img/planche-xs.png') no-repeat center;
+        background-size: cover; /* version standardisée */
+    }
+
+    .logoMobile a {
+        color: black;
+    }
+
+    .btn.scrollTopButton, .btn.allTricks {
+        right: 10px;
+        bottom: 80px;
+    }
+
+    .btn.allTricks {
+        top: 600px;
+    }
+
+    p.catchSentence {
+        font-size: 28px;
+        padding-top: 300px;
+    }
+
+    .card-deck span:nth-of-type(1n) {
+    display: block;
+    width: 100%;
+    }
+
+    a.card-title {
+        font-size: 20px;
+    }
+
+    .content, .smallContent, .extraSmallContent, .discuss {
+        width: 95%;
+        margin: auto;
+    }
+
+    nav.navbarDesktop {
+        display: none;
+    }
+
+    nav.navbarMobile {
+        background-color: #cdd2d8;
+        position: fixed;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    nav.navbarMobile a i {
+        font-size: 25px;
+        color: black;
+    }
+
+    div.otherMedias, div.updateMediasBlock {
+        display: none;
+    }
+
+    a.btn-info {
+        background-color: rgba(112, 169, 244, 0.5);
+    }
+
+    .updateImage img {
+        max-width: 150px;
+    }
+
+    .avatarChat img {
+        width: 40px;
+        height: 40px;
+    }
+
+    footer em {
+        font-size: 10px;
+    }
+}

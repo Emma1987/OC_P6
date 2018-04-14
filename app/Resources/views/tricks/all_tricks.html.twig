@@ -16,11 +16,11 @@
                     <div class="form-group">
                         {{ form_widget(searchForm.groupName, {'attr': {'class': 'form-control'}}) }}
                     </div>
-                    {{ form_widget(searchForm.save, {'attr': {'class': 'btn btn-light w-100 validButton'}, 'label' : 'Rechercher'}) }}
+                    <input type="submit" class="btn btn-light w-100 validButton" value="Rechercher">
                     {{ form_rest(searchForm) }}
                     {{ form_end(searchForm) }}
                 </div>
-                <div class="addTrick">
+                <div class="addTrick pb-5">
                     <h2 class="text-center mb-2">Vous ne trouvez pas votre figure ?</h2>
                     <a class="btn btn-light w-100 validButton" href="{{ path('snowtricks_add') }}">
                         {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}

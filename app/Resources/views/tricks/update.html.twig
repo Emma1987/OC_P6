@@ -10,7 +10,7 @@
             <div class="col-sm-8">
                 <div class="row">
                     {% for image in trick.images %}
-                        <div class="col-sm-3 updateImage">
+                        <div class="col-sm-3 col-xs-6 updateImage">
                             <img src="{{ asset(image.url) }}" alt="">
                             <a href="{{ path('snowtricks_image_remove', {'id': image.id}) }}"><em>Supprimer cette image</em></a>
                         </div>
