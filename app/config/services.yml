@@ -1,9 +1,5 @@
 # Learn more about services, parameters and containers at
 # https://symfony.com/doc/current/service_container.html
-parameters:
-    # number of messages per page
-    message.pagination: 10
-
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -15,9 +11,18 @@ services:
         # if you need to do this, you can override this setting on individual services
         public: false
 
-    Snowtricks\:
-        resource: '../../src/Snowtricks/*'
-
     Snowtricks\PlatformBundle\Controller\UserController:
         autowire: true
         tags: ['controller.service_arguments']
+
+    Snowtricks\PlatformBundle\DataFixtures\:
+        resource: '../../src/Snowtricks/PlatformBundle/DataFixtures'
+        tags: ['doctrine.fixture.orm']
+
+    app.token_generator:
+        class: Snowtricks\PlatformBundle\Service\TokenGenerator
+        public: true
+
+    app.mail_sender:
+        class: Snowtricks\PlatformBundle\Service\MailSender
+        public: true

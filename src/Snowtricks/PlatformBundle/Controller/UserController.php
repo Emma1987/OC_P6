@@ -5,14 +5,13 @@ namespace Snowtricks\PlatformBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Snowtricks\PlatformBundle\Entity\User;
 use Snowtricks\PlatformBundle\Entity\Avatar;
 use Snowtricks\PlatformBundle\Form\UserType;
 use Snowtricks\PlatformBundle\Form\AvatarType;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Snowtricks\PlatformBundle\Service\TokenGenerator;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class UserController extends Controller
 {
@@ -27,11 +26,7 @@ class UserController extends Controller
      *     "/user/register", 
      *     name="snowtricks_register")
      */
-    public function registerAction(
-        Request $request, 
-        UserPasswordEncoderInterface $passwordEncoder, 
-        \Swift_Mailer $mailer, 
-        TokenGenerator $tokenGen)
+    public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
         $user = new User();
         $userForm = $this->createForm(UserType::class, $user, array(
@@ -42,24 +37,14 @@ class UserController extends Controller
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
 
-            $token = $tokenGen->generateToken(60);
+            $token = $this->get('app.token_generator')->generateToken(60);
             $user->setToken($token);
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $message = (new \Swift_Message('Vous n\'êtes plus qu\'à un clic de notre communauté !'))
-                ->setFrom('email@example.com')
-                ->setTo($user->getEmail())
-                ->setBody(
-                    $this->renderView('emails/registration.html.twig', array(
-                        'name'  => $user->getUsername(),
-                        'token' => $user->getToken(),
-                        'userId' => $user->getId())),
-                    'text/html'
-                );
-            $mailer->send($message);
+            $this->get('app.mail_sender')->sendMail('emails/registration.html.twig', 'Vous n\'êtes plus qu\'à un clic de notre communauté !', $user);
 
             $request->getSession()->getFlashBag()->add('success', 'Un mail de confirmation vous a été envoyé');
         }
@@ -82,9 +67,8 @@ class UserController extends Controller
         $user = $userRepo->findOneById($request->attributes->get('userId'));
 
         if ($user == null || $user->getToken() != $request->attributes->get('token')) {
-            $request->getSession()->getFlashBag()->add('warning', 'Ce mail de confirmation n\'est associé à aucune demande de création de compte.');
-            return $this->render('users/register.html.twig', array(
-                'userForm' => $this->createForm(UserType::class, $user)->createView()));
+            $request->getSession()->getFlashBag()->add('warning', 'Ce mail de confirmation n\'est associé à aucun compte.');
+            return $this->redirectToRoute('snowtricks_register');
         }
 
         $user->setToken(null);
@@ -95,7 +79,6 @@ class UserController extends Controller
 
         $request->getSession()->getFlashBag()->add('success', 'Votre inscription à bien été validée.');
         return $this->redirectToRoute('snowtricks_login');
-
     }
 
     /**
@@ -108,7 +91,7 @@ class UserController extends Controller
      *     "/user/reset-password", 
      *     name="snowtricks_resetpass")
      */
-    public function resetPassAction(Request $request, \Swift_Mailer $mailer, TokenGenerator $tokenGen)
+    public function resetPassAction(Request $request)
     {
         $user = new User();
         $userForm = $this->createForm(UserType::class, $user, array(
@@ -123,22 +106,13 @@ class UserController extends Controller
             if ($user == null) {
                 $request->getSession()->getFlashBag()->add('warning', 'Ce nom dutilisateur ne me dit rien...');
             } else {
-                $token = $tokenGen->generateToken(60);
+                $token = $this->get('app.token_generator')->generateToken(60);
                 $user->setToken($token);
 
                 $entityManager->flush($user);
 
-                $message = (new \Swift_Message('Votre demande de réinitialisation de mot de passe'))
-                    ->setFrom('manue21x@gmail.com')
-                    ->setTo($user->getEmail())
-                    ->setBody(
-                        $this->renderView('emails/reset_pass.html.twig', array(
-                            'name'  => $user->getUsername(),
-                            'token' => $user->getToken(),
-                            'userId' => $user->getId())),
-                        'text/html'
-                );
-                $mailer->send($message);
+                $this->get('app.mail_sender')->sendMail('emails/reset_pass.html.twig', 'Votre demande de réinitialisation de mot de passe', $user);
+
                 $request->getSession()->getFlashBag()->add('success', 'Un mail vous a été envoyé !');
             }
         }
