@@ -1,0 +1,45 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Les figures{% endblock title%}
+
+{% block body %}
+	<div class="content">
+		<div class="row">
+			<div class="col-sm-3">
+				<h2 class="text-center mb-3">Filtrez votre recherche</h2>
+				<div class="searchForm mb-5">
+					{{ form_start(searchForm) }}
+					{{ form_errors(searchForm, {'attr': {'class': 'btn btn-danger'}}) }}
+	                <div class="form-group">
+	                	{{ form_widget(searchForm.trickName, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom de la figure'}}) }}
+	                </div>
+	                <div class="form-group">
+	                	{{ form_widget(searchForm.groupName, {'attr': {'class': 'form-control'}}) }}
+					</div>
+					{{ form_widget(searchForm.save, {'attr': {'class': 'btn btn-light w-100 validButton'}, 'label' : 'Rechercher'}) }}
+					{{ form_rest(searchForm) }}
+	  				{{ form_end(searchForm) }}
+	  			</div>
+	  			<div class="addTrick">
+	  				<h2 class="text-center mb-2">Vous ne trouvez pas votre figure ?</h2>
+	  				<a class="btn btn-light w-100 validButton" href="{{ path('snowtricks_add') }}">
+	  					{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+	  						Ajoutez la !
+	  					{% else %}
+	  						Connectez-vous pour l'ajouter !
+	  					{% endif %}
+	  				</a>
+	  			</div>
+			</div>
+			<div class="col-sm-9">
+				{{ include('flash.html.twig') }}
+				{% if listTricks is empty %}
+					<div class="alert alert-danger w-100" role="alert">
+						<p class="mb-0 text-center">Nous n'avons pas trouvé votre figure</p>
+					</div>
+				{% endif %}	
+				{{ include('tricks/listTricks.html.twig') }}
+			</div>
+		</div>
+	</div>
+{% endblock body %}

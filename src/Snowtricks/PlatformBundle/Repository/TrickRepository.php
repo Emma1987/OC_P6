@@ -10,5 +10,21 @@ namespace Snowtricks\PlatformBundle\Repository;
  */
 class TrickRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Request for search form
+     */
+    public function search($trickName, $group)
+    {
+        $query = $this->createQueryBuilder('t');
 
+        if (!empty($trickName)) {
+            $query->andWhere('t.name LIKE :trickName')->setParameter('trickName', '%'.$trickName.'%');
+        }
+
+        if (!empty($group)) {
+            $query->andWhere('t.trickgroup = :group')->setParameter('group', $group);
+        }
+
+        return $query->getQuery()->getResult();
+    }
 }

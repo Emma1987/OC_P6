@@ -12,19 +12,19 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
  */
 class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
-	public function paginator($trickId, $page, $perPage)
-	{		
-		$query = $this->createQueryBuilder('m')
-			->join('m.trick', 't')
-			->where('t.id = :trickId')
-			->setParameter('trickId', $trickId)
-			->orderBy('m.messagePublished', 'DESC')
-			->getQuery();
+    public function paginator($trickId, $page, $perPage)
+    {       
+        $query = $this->createQueryBuilder('m')
+            ->join('m.trick', 't')
+            ->where('t.id = :trickId')
+            ->setParameter('trickId', $trickId)
+            ->orderBy('m.messagePublished', 'DESC')
+            ->getQuery();
 
-		$query
-			->setFirstResult(($page-1) * $perPage)
-			->setMaxResults($perPage);
+        $query
+            ->setFirstResult(($page-1) * $perPage)
+            ->setMaxResults($perPage);
 
-		return new Paginator($query);
-	}
+        return new Paginator($query);
+    }
 }

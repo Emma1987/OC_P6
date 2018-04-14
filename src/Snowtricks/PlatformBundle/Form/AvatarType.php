@@ -5,9 +5,10 @@ namespace Snowtricks\PlatformBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class VideoType extends AbstractType
+class AvatarType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -15,19 +16,17 @@ class VideoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('url', UrlType::class, array(
-                'attr'  => array(
-                    'placeholder' => 'Entrez l\'URL de partage fournie par Youtube ou Dailymotion'),
-                'label' => false));
+            ->add('file', FileType::class)
+            ->add('save', SubmitType::class);
     }
-
+    
     /**
      * {@inheritdoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Snowtricks\PlatformBundle\Entity\Video'
+            'data_class' => 'Snowtricks\PlatformBundle\Entity\Avatar'
         ));
     }
 
@@ -36,6 +35,6 @@ class VideoType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'snowtricks_platformbundle_video';
+        return 'snowtricks_platformbundle_avatar';
     }
 }

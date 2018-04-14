@@ -1,16 +1,1 @@
-snowtricks_home:
-    path:   /
-    defaults: { _controller: SnowtricksPlatformBundle:Trick:index }
 
-snowtricks_add:
-    path:   /trick/add
-    defaults: { _controller: SnowtricksPlatformBundle:Trick:add }
-
-snowtricks_view:
-    path:   /{slug}/{id}
-    defaults: 
-      _controller: SnowtricksPlatformBundle:Trick:show
-      id: 1
-    requirements:
-        slug: "[a-zA-Z0-9-]+"
-        id: \d+

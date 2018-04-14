@@ -3,14 +3,24 @@
 {% block title %}Ajouter une figure{% endblock title%}
 
 {% block body %}
-	<div class="content">
+	<div class="smallContent">
+		{{ include('flash.html.twig') }}
 		<div class="card mb-5">
 			<div class="card-header">
-   				<h2 class="text-center">Ajouter une nouvelle figure</h2>
+				{% block cardHeader %}
+   					<h2 class="text-center">Ajouter une nouvelle figure</h2>
+				{% endblock %}
 			</div>
 			<div class="card-body">
 				{{ form_start(trickForm) }}
-				{{ form_errors(trickForm, {'attr': {'class': 'btn btn-danger'}}) }}
+				<div class="alert alert-danger" role="alert">
+					{{ form_errors(trickForm) }}
+					{{ form_errors(trickForm.name) }}
+					{{ form_errors(trickForm.description) }}
+					{{ form_errors(trickForm.trickgroup) }}
+					{{ form_errors(trickForm.images) }}
+					{{ form_errors(trickForm.videos) }}
+				</div>
 				<div class="list-group-item mb-2">
                     <div class="form-group row">
                     	{{ form_label(trickForm.name, 'Nom de la figure', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
@@ -26,6 +36,7 @@
 					</div>
 				</div>
 				<div class="list-group-item mb-2">
+					{% block updateImage %}{% endblock %}
 					<div class="form-group row">
 						{{ form_label(trickForm.images, 'Image(s)', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
 						{% form_theme trickForm.images 'jquery.collection.html.twig' %}
@@ -37,9 +48,11 @@
 						{{ form_widget(trickForm.videos) }}
 					</div>
 				</div>
-
-				{{ form_widget(trickForm.save, {'attr': {'class': 'btn btn-light'}}) }}
-
+				<div class="validationButtons text-center">
+					{% block return %}{% endblock %}
+					{{ form_widget(trickForm.save, {'attr': {'class': 'btn btn-light validButton'}, 'label' : 'Enregistrer'}) }}
+					{% block delete %}{% endblock %}
+				</div>
 				{{ form_rest(trickForm) }}
   				{{ form_end(trickForm) }}
 			</div>

@@ -6,9 +6,10 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class MessageType extends AbstractType
+class SearchType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -16,12 +17,16 @@ class MessageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('content',    TextType::class, array(
-                'attr'  => array(
-                    'placeholder' => 'Postez un message !')))
-            ->add('save',       SubmitType::class, array(
-                'attr'  => array(
-                    'label'       => 'Envoyer')));
+            ->add('trickName', TextType::class, array(
+                'required' => false))
+            ->add('groupName', EntityType::class, array(
+                'class' => 'SnowtricksPlatformBundle:TrickGroup',
+                'choice_label' => 'name',
+                'placeholder' => 'Ou sélectionnez un groupe',
+                'required' => false,
+                'expanded' => false,
+                'multiple' => false))
+            ->add('save', SubmitType::class);
     }
 
     /**
@@ -30,7 +35,7 @@ class MessageType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Snowtricks\PlatformBundle\Entity\Message'
+
         ));
     }
 
@@ -39,6 +44,6 @@ class MessageType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'snowtricks_platformbundle_message';
+        return 'searchForm';
     }
 }

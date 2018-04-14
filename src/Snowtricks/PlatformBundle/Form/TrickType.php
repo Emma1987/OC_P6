@@ -66,6 +66,4 @@ class TrickType extends AbstractType
     {
         return 'snowtricks_platformbundle_trick';
     }
-
-
 }

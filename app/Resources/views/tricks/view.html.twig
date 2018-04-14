@@ -1,0 +1,184 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ trick.name }}{% endblock title%}
+
+{% block body %}
+<div class="smallContent">
+    {{ include('flash.html.twig') }}
+
+    <!-- TRICK -->
+    <div class="card trickViewCard mt-1">
+        <div class="card-header text-center">
+            <h2>{{ trick.name|upper }}</h2>
+        </div>
+        <div class="card-body">
+            <!-- FIRST IMAGE -->
+            <div class="coverImage">
+                {% if trick.images is empty %}
+                    <img src="{{ asset('img/background.jpg') }}" alt="Figure de snowboard" />
+                {% else %}  
+                    <img src="{{ asset(trick.images|first.url) }}" alt="{{ trick.images|first.alt }}" />
+                {% endif %}
+                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                        <div class="btn-group trickButtons" role="group">
+                            <a class="btn btn-outline-secondary" href="{{ path('snowtricks_update', {'slug': trick.slug}) }}"><i class="fa fa-pencil-square-o fa-fw"></i></a>
+                            <a class="btn btn-outline-secondary" data-toggle="modal" data-target="#deleteConfirmation"><i class="fa fa-trash fa-fw"></i></a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- MODAL DELETE CONFIRM -->
+            <div class="modal fade" id="deleteConfirmation" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="myModalLabel">Confirmation</h3>
+                        </div>
+                        <div class="modal-body">
+                            <p>Confirmez vous la suppression de cette figure et de ses messages ?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                            <a class="btn btn-danger" href="{{ path('snowtricks_delete', {'id': trick.id}) }}">Supprimer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTHER MEDIAS -->
+            <div class="row">
+                <div class="otherImages col-sm-6">
+                    {% if trick.images is not empty %}
+                        <div class="row">
+                            {% for image in images|slice(1, 2) %}
+                                <div class="col-sm-6 pt-1">
+                                    <img src="{{ asset(image.url) }}" alt="{{ image.alt }}" />
+                                </div>
+                            {% endfor %}
+                        </div>  
+                    {% endif %}
+                </div>
+                <div class="videos col-sm-6">
+                    {% if trick.videos is not empty %}
+                        <div class="row">
+                            {% for video in videos|slice(0,2) %}
+                                <div class="col pt-1">
+                                    <iframe width="200" height="110" src="{{ video.iframeUrl }}" frameborder="0" allow=" encrypted-media" allowfullscreen></iframe>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- VIEW ALL MODAL -->
+            {% if trick.images is not empty or trick.videos is not empty %}
+                <button class="btn btn-light w-100 mt-3" data-toggle="modal" data-target=".allMedias">Voir tous les médias</button>
+            {% endif %}
+
+            <div class="modal fade allMedias" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators invisible">
+                                {% set number = -1 %}
+                                {% for image in images %}
+                                    <li data-target="#myCarousel" data-slide-to"{{ number + 1 }}"></li>
+                                    {% set number = number + 1 %}
+                                {% endfor %}
+                            </ol>
+                            <div class="carousel-inner">
+                                {% if trick.images is not empty %}
+                                    <div class="carousel-item active">
+                                        <img class="w-100" src="{{ asset(trick.images|first.url) }}" />
+                                    </div>
+                                {% endif %}
+                                {% for image in images|slice(1) %}
+                                    <div class="carousel-item">
+                                        <img class="w-100" src="{{ asset(image.url) }}" alt="image.alt" />
+                                    </div>
+                                {% endfor %}
+                                {% for video in videos %}
+                                    <div class="carousel-item text-center">
+                                        <iframe width="550" height="400" src="{{ video.iframeUrl }}" frameborder="0" allow="encrypted-media" allowfullscreen></iframe>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            </a>
+                            <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+
+            <!-- TRICK CONTENT -->
+            <div class="mt-2">
+                {% if trick.updatedAt is empty %}
+                    <p class="text-right"><em><i class="fa fa-clock-o fa-fw"></i> Publié le {{ trick.publishedAt|date("m/d/Y", "Europe/Paris") }}</em></p>
+                {% else %}
+                    <pclass="text-right"><em><i class="fa fa-clock-o fa-fw"></i> Mis à jour le {{ trick.updatedAt|date("m/d/Y", "Europe/Paris") }}</em></p>
+                {% endif %}
+                <p class="mt-1 mb-3"><em>Cette figure appartient au groupe '{{ trick.trickgroup.name }}'</em></p>
+                <h2>Description :</h2>
+                <p>{{ trick.description }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="card mt-3">
+        <div class="card-header text-center">
+            <h2>Discutons ensemble sur cette figure</h2>
+        </div>
+        <div class="card-body">
+            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                {{ form_start(messageForm) }}
+                {{ form_errors(messageForm) }}
+                <div class="form-group row mt-2">
+                    {{ form_errors(messageForm.content) }}
+                    {{ form_widget(messageForm.content, {'attr': {'class': 'col-sm-9 col-xs-12 form-control ml-2 mr-2'}}) }}
+                    {{ form_widget(messageForm.save, { 'label': 'Envoyer', 'attr': {'class': 'col-sm-2 col-xs-12 mr-2 btn btn-light'}}) }}
+                </div>
+                {{ form_rest(messageForm) }}
+                {{ form_end(messageForm) }}
+            {% else %}
+                <p class="text-center pt-1 pb-1"><a href="{{ path('snowtricks_login') }}">Connectez-vous</a> pour participer à cette discussion !</p>
+            {% endif %}
+
+            <h3 class="text-center">Fil de discussion</h3>
+            {% if messages is empty %}
+                <p>Aucun commentaire n'a encore été posté, soyez le premier !</p>
+            {% else %}
+                {% for message in messages %}
+                    <div class="row">
+                        <div class="avatarChat col-1">
+                            {% if message.user.avatar is not empty %}
+                                <img src ="{{ asset(message.user.avatar.url) }}" alt="avatar">
+                            {% else %}
+                                <img src ="{{ asset('uploads/avatars/avatar_defaut.png') }}" alt="avatar">
+                            {% endif %}
+                        </div>
+                        <div class="col-11">
+                            <em> Posté par {{ message.user.username }} le {{ message.messagePublished|date("d F Y", "Europe/Paris") }}</em><br />
+                            Contenu : {{ message.content }} <hr />
+                        </div>
+                    </div>
+                {% endfor %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% for page in range(1, nbPages) %}
+                            <li class="page-item"><a class="page-link" href="{{ path('snowtricks_view', {'slug': trick.slug}) }}?page={{ page }}">{{ page }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock body %}

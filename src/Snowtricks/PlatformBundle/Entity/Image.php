@@ -3,6 +3,7 @@
 namespace Snowtricks\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -26,14 +27,16 @@ class Image
     /**
      * @var string
      *
-     * @ORM\Column(name="url", type="string", length=255, unique=true)
+     * @ORM\Column(name="url", type="string", length=120, unique=true)
+     * @Assert\Type("string")
      */
     private $url;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="alt", type="string", length=255)
+     * @ORM\Column(name="alt", type="string", length=120)
+     * @Assert\Type("string")
      */
     private $alt;
 
@@ -45,6 +48,13 @@ class Image
      */
     private $trick;
 
+    /**
+     * @Assert\Image(
+     *     maxSize = "1",
+     *     maxSizeMessage = "Trop grosse cette image !!!!",
+     *     mimeTypes = {"image/png", "image/jpeg", "image/jpg"},
+     *     mimeTypesMessage = "L'image doit être au format png, jpg ou jpeg.")
+     */
     private $files;
 
     public function upload($file)
@@ -52,14 +62,6 @@ class Image
         if (null === $file) {
             return;
         }
-
-        // if ($this->file->guessExtension() != 'jpg' || $this->file->guessExtension() != 'jpeg' || $this->file->guessExtension() != 'png') {
-        //     //error
-        // }
-
-        // if ($this->file->getClientSize() > 1048576) {
-        //     //error doit etre inf à 1Mo
-        // }
 
         $name = $this->trick->getSlug().'-'.random_int(1, 10000);
         $this->url = 'uploads/'.$name;
