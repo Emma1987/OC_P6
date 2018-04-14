@@ -11,6 +11,10 @@ services:
         # if you need to do this, you can override this setting on individual services
         public: false
 
+    Snowtricks\PlatformBundle\Controller\TrickController:
+        autowire: true
+        tags: ['controller.service_arguments']
+
     Snowtricks\PlatformBundle\Controller\UserController:
         autowire: true
         tags: ['controller.service_arguments']

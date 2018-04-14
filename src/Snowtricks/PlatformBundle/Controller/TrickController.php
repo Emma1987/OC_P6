@@ -3,8 +3,10 @@
 namespace Snowtricks\PlatformBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Snowtricks\PlatformBundle\Entity\Trick;
 use Snowtricks\PlatformBundle\Entity\Image;
 use Snowtricks\PlatformBundle\Entity\Message;
@@ -12,10 +14,19 @@ use Snowtricks\PlatformBundle\Form\TrickType;
 use Snowtricks\PlatformBundle\Form\ImageType;
 use Snowtricks\PlatformBundle\Form\MessageType;
 use Snowtricks\PlatformBundle\Form\SearchType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class TrickController extends Controller
 {
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     /**
      * Return homepage view
      *
@@ -25,8 +36,7 @@ class TrickController extends Controller
      */
     public function indexAction()
     {
-        $trickRepo = $this->getDoctrine()->getManager()->getRepository(Trick::class);
-        $listTricks = $trickRepo->findAll();
+        $listTricks = $this->entityManager->getRepository(Trick::class)->findAll();
 
         return $this->render('tricks/index.html.twig', array(
             'listTricks' => $listTricks,
@@ -43,16 +53,15 @@ class TrickController extends Controller
      */
     public function allTricksAction(Request $request)
     {
-        $trickRepo = $this->getDoctrine()->getManager()->getRepository(Trick::class);
         $searchForm = $this->createForm(SearchType::class);
 
         $searchForm->handleRequest($request);
         if ($searchForm->isSubmitted() && $searchForm->isValid()) {
             $trickName = htmlspecialchars($searchForm->getData()['trickName']);
             $group = $searchForm->getData()['groupName'];
-            $listTricks = $trickRepo->search($trickName, $group);
+            $listTricks = $this->entityManager->getRepository(Trick::class)->search($trickName, $group);
         } else {
-            $listTricks = $trickRepo->findAll();
+            $listTricks = $this->entityManager->getRepository(Trick::class)->findAll();
         }
 
         return $this->render('tricks/all_tricks.html.twig', array(
@@ -72,8 +81,7 @@ class TrickController extends Controller
      */
     public function showAction(Request $request)
     {
-        $trickRepo = $this->getDoctrine()->getManager()->getRepository(Trick::class);
-        $trick = $trickRepo->findOneBySlug($request->attributes->get('slug'));
+        $trick = $this->entityManager->getRepository(Trick::class)->findOneBySlug($request->attributes->get('slug'));
 
         // MESSAGE FORM
         $message = new Message();
@@ -81,11 +89,10 @@ class TrickController extends Controller
 
         $messageForm->handleRequest($request);
         if ($messageForm->isSubmitted() && $messageForm->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($message);
+            $this->entityManager->persist($message);
             $message->setUser($this->getUser());
-            $trick->addMessage($message);
-            $entityManager->flush();
+            $message->setTrick($trick);
+            $this->entityManager->flush();
 
             $request->getSession()->getFlashBag()->add('success', 'Votre message a bien été ajouté !');
             return $this->redirectToRoute('snowtricks_view', array(
@@ -96,10 +103,7 @@ class TrickController extends Controller
         // PAGINATION
         $perPage = Message::NUMBER_PAGINATION;
         $page = $request->query->get('page', 1);
-
-        $messageRepo = $this->getDoctrine()->getManager()->getRepository(Message::class);
-        $pagination = $messageRepo->paginator($trick->getId(), $page, $perPage);
-
+        $pagination = $this->entityManager->getRepository(Message::class)->paginator($trick->getId(), $page, $perPage);
         $nbPages = ceil(count($pagination) / $perPage);
 
         // VIEW
@@ -131,8 +135,7 @@ class TrickController extends Controller
 
         $trickForm->handleRequest($request);
         if ($trickForm->isSubmitted() && $trickForm->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($trick);
+            $this->entityManager->persist($trick);
             $slug = $trick->createSlug($trick->getName());
             $trick->setSlug($slug);
 
@@ -144,7 +147,7 @@ class TrickController extends Controller
                     $image->upload($file);
                 }
             }
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $request->getSession()->getFlashBag()->add('success', 'Votre figure a bien été ajoutée !');
             return $this->redirectToRoute('snowtricks_view', array(
@@ -170,8 +173,7 @@ class TrickController extends Controller
      */
     public function updateAction(Request $request)
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $trick = $entityManager->getRepository(Trick::class)->findOneBySlug($request->attributes->get('slug'));
+        $trick = $this->entityManager->getRepository(Trick::class)->findOneBySlug($request->attributes->get('slug'));
 
         $trickForm = $this->createForm(TrickType::class, $trick);
 
@@ -188,7 +190,7 @@ class TrickController extends Controller
                     $image->upload($file);
                 }
             }
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $request->getSession()->getFlashBag()->add('success', 'Votre figure a bien été modifiée !');
             return $this->redirectToRoute('snowtricks_view', array(
@@ -217,11 +219,10 @@ class TrickController extends Controller
      */
     public function deleteAction(Request $request)
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $trick = $entityManager->getRepository(Trick::class)->findOneById($request->attributes->get('id'));
+        $trick = $this->entityManager->getRepository(Trick::class)->findOneById($request->attributes->get('id'));
 
-        $entityManager->remove($trick);
-        $entityManager->flush();
+        $this->entityManager->remove($trick);
+        $this->entityManager->flush();
 
         $request->getSession()->getFlashBag()->add('success', 'La figure a bien été supprimée.');
         return $this->redirectToRoute('snowtricks_all_tricks');

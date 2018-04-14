@@ -3,6 +3,7 @@
 namespace Snowtricks\PlatformBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -16,11 +17,19 @@ use Snowtricks\PlatformBundle\Form\AvatarType;
 class UserController extends Controller
 {
     /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    /**
      * Register a new user and send an email to get a confirmation
      * @param  Request                      $request
      * @param  UserPasswordEncoderInterface $passwordEncoder
-     * @param  \Swift_Mailer                $mailer
-     * @param  TokenGenerator               $tokenGen        [Service used to generate a token]
      *
      * @Route(
      *     "/user/register", 
@@ -40,9 +49,8 @@ class UserController extends Controller
             $token = $this->get('app.token_generator')->generateToken(60);
             $user->setToken($token);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
 
             $this->get('app.mail_sender')->sendMail('emails/registration.html.twig', 'Vous n\'êtes plus qu\'à un clic de notre communauté !', $user);
 
@@ -63,8 +71,7 @@ class UserController extends Controller
      */
     public function confirmRegisterAction(Request $request)
     {
-        $userRepo = $this->getDoctrine()->getManager()->getRepository(User::class);
-        $user = $userRepo->findOneById($request->attributes->get('userId'));
+        $user = $this->entityManager->getRepository(User::class)->findOneById($request->attributes->get('userId'));
 
         if ($user == null || $user->getToken() != $request->attributes->get('token')) {
             $request->getSession()->getFlashBag()->add('warning', 'Ce mail de confirmation n\'est associé à aucun compte.');
@@ -74,8 +81,7 @@ class UserController extends Controller
         $user->setToken(null);
         $user->setIsActive(true);
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->flush($user);
+        $this->entityManager->flush($user);
 
         $request->getSession()->getFlashBag()->add('success', 'Votre inscription à bien été validée.');
         return $this->redirectToRoute('snowtricks_login');
@@ -84,8 +90,6 @@ class UserController extends Controller
     /**
      * Send a mail to reset the password
      * @param  Request        $request
-     * @param  \Swift_Mailer  $mailer
-     * @param  TokenGenerator $tokenGen [Service used to generate a token]
      *
      * @Route(
      *     "/user/reset-password", 
@@ -101,15 +105,14 @@ class UserController extends Controller
 
         $userForm->handleRequest($request);
         if ($userForm->isSubmitted() && $userForm->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $user = $entityManager->getRepository(User::class)->findOneByUsername($userForm->getData()->getUsername());
+            $user = $this->entityManager->getRepository(User::class)->findOneByUsername($userForm->getData()->getUsername());
             if ($user == null) {
                 $request->getSession()->getFlashBag()->add('warning', 'Ce nom dutilisateur ne me dit rien...');
             } else {
                 $token = $this->get('app.token_generator')->generateToken(60);
                 $user->setToken($token);
 
-                $entityManager->flush($user);
+                $this->entityManager->flush($user);
 
                 $this->get('app.mail_sender')->sendMail('emails/reset_pass.html.twig', 'Votre demande de réinitialisation de mot de passe', $user);
 
@@ -131,8 +134,7 @@ class UserController extends Controller
      */
     public function confirmResetPassAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $user = $entityManager->getRepository(User::class)->findOneById($request->attributes->get('userId'));
+        $user = $this->entityManager->getRepository(User::class)->findOneById($request->attributes->get('userId'));
         $email = $user->getEmail();
 
         $userForm = $this->createForm(UserType::class, $user, array(
@@ -157,8 +159,7 @@ class UserController extends Controller
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush($user);
+            $this->entityManager->flush($user);
 
             $request->getSession()->getFlashBag()->add('success', 'Votre mot de passe a bien été modifié !');
             return $this->redirectToRoute('snowtricks_login');
@@ -222,8 +223,7 @@ class UserController extends Controller
             $user = $this->getUser();
             $user->setAvatar($avatar);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush($user);
+            $this->entityManager->flush($user);
         }
 
         return $this->render('users/account.html.twig', array(
@@ -241,14 +241,13 @@ class UserController extends Controller
      */
     public function deleteAvatarAction(Request $request)
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $avatar = $entityManager->getRepository(Avatar::class)->findOneById($request->attributes->get('id'));
+        $avatar = $this->entityManager->getRepository(Avatar::class)->findOneById($request->attributes->get('id'));
 
         $this->getUser()->setAvatar(null);
-        $entityManager->flush();
+        $this->entityManager->flush();
 
-        $entityManager->remove($avatar);
-        $entityManager->flush();
+        $this->entityManager->remove($avatar);
+        $this->entityManager->flush();
 
         return $this->redirectToRoute('snowtricks_account');
     }
