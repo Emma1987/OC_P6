@@ -140,13 +140,13 @@ class TrickController extends Controller
             $trick->setSlug($slug);
 
             if (!empty($trickForm['images']->getData())) {
-                $files = $trickForm['images']->getData();
-                foreach ($files as $file) {
-                    $image = new Image();
+                $images = $trickForm['images']->getData();
+                foreach ($images as $image) {
                     $trick->addImage($image);
-                    $image->upload($file);
+                    $image->upload($image->getFiles(), $trick);
                 }
             }
+
             $this->entityManager->flush();
 
             $request->getSession()->getFlashBag()->add('success', 'Votre figure a bien été ajoutée !');
@@ -183,13 +183,13 @@ class TrickController extends Controller
             $trick->setSlug($slug);
 
             if (!empty($trickForm['images']->getData())) {
-                $files = $trickForm['images']->getData();
-                foreach ($files as $file) {
-                    $image = new Image();
+                $images = $trickForm['images']->getData();
+                foreach ($images as $image) {
                     $trick->addImage($image);
-                    $image->upload($file);
+                    $image->upload($image->getFiles(), $trick);
                 }
             }
+            
             $this->entityManager->flush();
 
             $request->getSession()->getFlashBag()->add('success', 'Votre figure a bien été modifiée !');

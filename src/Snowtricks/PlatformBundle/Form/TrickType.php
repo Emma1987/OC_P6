@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Snowtricks\PlatformBundle\Form\ImageType;
 use Snowtricks\PlatformBundle\Form\VideoType;
 
 class TrickType extends AbstractType
@@ -28,15 +29,14 @@ class TrickType extends AbstractType
                 'choice_label'  => 'name',
                 'expanded'      => false))
             ->add('images',         CollectionType::class, array(
-                'entry_type'    => FileType::class,
+                'entry_type'    => ImageType::class,
                 'entry_options' => ['label' => false],
                 'required'      => false,
                 'allow_add'     => true,
                 'allow_delete'  => true,
                 'prototype'     => true,
                 'attr'          => array(
-                    'class'         => 'my-selector-images col-sm-8'),
-                'mapped'        => false))
+                    'class'         => 'my-selector-images col-sm-8')))
             ->add('videos',         CollectionType::class, array(
                 'entry_type'    => VideoType::class,
                 'entry_options' => ['label' => false],
