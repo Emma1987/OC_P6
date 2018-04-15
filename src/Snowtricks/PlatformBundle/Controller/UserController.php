@@ -200,7 +200,7 @@ class UserController extends Controller
      *     "/login", 
      *     name="snowtricks_login")
      */
-    public function loginAction(Request $request, AuthenticationUtils $authenticationUtils)
+    public function loginAction(AuthenticationUtils $authenticationUtils)
     {
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();

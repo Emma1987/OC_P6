@@ -28,7 +28,7 @@ class Video
      *
      * @ORM\Column(name="url", type="string", length=255)
      * @Assert\Regex(
-     *     pattern="#(http|https)://(www.youtu.be|www.dailymotion.com)/#",
+     *     pattern="#^(http|https)://(youtu.be/|www.dailymotion.com/).*#",
      *     match=true,
      *     message="L'url ne semble pas être une URL de partage provenant de Youtube ou Dailymotion.")
      */
@@ -40,6 +40,14 @@ class Video
      * @ORM\Column(name="iframe_url", type="string", length=255)
      */
     private $iframeUrl;
+
+    /**
+     * @var Trick
+     *
+     * @ORM\ManyToOne(targetEntity="Snowtricks\PlatformBundle\Entity\Trick", inversedBy="videos")
+     * @ORM\JoinColumn(nullable=false, referencedColumnName="id")
+     */
+    private $trick;
 
 
     /**
@@ -101,6 +109,30 @@ class Video
     }
 
     /**
+     * Set trick
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\Trick $trick
+     *
+     * @return Image
+     */
+    public function setTrick(\Snowtricks\PlatformBundle\Entity\Trick $trick)
+    {
+        $this->trick = $trick;
+
+        return $this;
+    }
+
+    /**
+     * Get trick
+     *
+     * @return \Snowtricks\PlatformBundle\Entity\Trick
+     */
+    public function getTrick()
+    {
+        return $this->trick;
+    }
+
+    /**
      * Get the platform where the video comes from
      * 
      * @ORM\PrePersist
@@ -119,7 +151,6 @@ class Video
 
     /**
      * Defines the Youtube iframe Url
-     * 
      */
     private function fromYoutube($url)
     {
@@ -132,7 +163,6 @@ class Video
 
     /**
      * Defines the Dailymotion iframe Url
-     * 
      */
     private function fromDailymotion($url)
     {

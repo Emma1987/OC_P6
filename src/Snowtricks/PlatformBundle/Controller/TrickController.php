@@ -108,13 +108,13 @@ class TrickController extends Controller
         // PAGINATION
         $perPage = Message::NUMBER_PAGINATION;
         $page = $request->query->get('page', 1);
-        $pagination = $this->entityManager->getRepository(Message::class)->paginator($trick->getId(), $page, $perPage);
-        $nbPages = ceil(count($pagination) / $perPage);
+        $messages = $this->entityManager->getRepository(Message::class)->paginator($trick->getId(), $page, $perPage);
+        $nbPages = ceil(count($messages) / $perPage);
 
         // VIEW
         return $this->render('tricks/view.html.twig', array(
             'trick'       => $trick,
-            'messages'    => $pagination,
+            'messages'    => $messages,
             'page'        => $page,
             'nbPages'     => $nbPages,
             'messageForm' => $messageForm->createView(),
@@ -143,12 +143,15 @@ class TrickController extends Controller
             $slug = $trick->createSlug($trick->getName());
             $trick->setSlug($slug);
 
-            if (!empty($trickForm['images']->getData())) {
-                $images = $trickForm['images']->getData();
-                foreach ($images as $image) {
-                    $trick->addImage($image);
-                    $image->upload($image->getFiles(), $trick);
-                }
+            $images = $trick->getImages();
+            foreach ($images as $image) {
+                $trick->addImage($image);
+                $image->upload($image->getFiles(), $trick);
+            }
+
+            $videos = $trick->getVideos();
+            foreach ($videos as $video) {
+                $trick->addVideo($video);
             }
 
             $this->entityManager->flush();
@@ -187,12 +190,15 @@ class TrickController extends Controller
             $slug = $trick->createSlug($trick->getName());
             $trick->setSlug($slug);
 
-            if (!empty($trickForm['images']->getData())) {
-                $images = $trickForm['images']->getData();
-                foreach ($images as $image) {
-                    $trick->addImage($image);
-                    $image->upload($image->getFiles(), $trick);
-                }
+            $images = $trick->getImages();
+            foreach ($images as $image) {
+                $trick->addImage($image);
+                $image->upload($image->getFiles(), $trick);
+            }
+
+            $videos = $trick->getVideos();
+            foreach ($videos as $video) {
+                $trick->addVideo($video);
             }
             
             $this->entityManager->flush();

@@ -42,7 +42,7 @@ class Message
 
     /**
      * @var Trick
-     * @ORM\ManyToOne(targetEntity="Snowtricks\PlatformBundle\Entity\Trick", inversedBy="messages")
+     * @ORM\ManyToOne(targetEntity="Snowtricks\PlatformBundle\Entity\Trick")
      * @ORM\JoinColumn(nullable=false)
      */
     private $trick;
@@ -128,29 +128,17 @@ class Message
     }
 
     /**
-     * Add trick.
+     * Set trick.
      *
      * @param \Snowtricks\PlatformBundle\Entity\Trick $trick
      *
      * @return Message
      */
-    public function addTrick(\Snowtricks\PlatformBundle\Entity\Trick $trick)
+    public function setTrick(\Snowtricks\PlatformBundle\Entity\Trick $trick)
     {
-        $this->trick[] = $trick;
+        $this->trick = $trick;
 
         return $this;
-    }
-
-    /**
-     * Remove trick.
-     *
-     * @param \Snowtricks\PlatformBundle\Entity\Trick $trick
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeTrick(\Snowtricks\PlatformBundle\Entity\Trick $trick)
-    {
-        return $this->trick->removeElement($trick);
     }
 
     /**
