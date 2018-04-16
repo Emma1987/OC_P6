@@ -24,7 +24,7 @@ class MailSender
             ->setFrom('manue21x@gmail.com')
             ->setTo($user->getEmail())
             ->setBody(
-                $this->twig->render('emails/registration.html.twig', array(
+                $this->twig->render($template, array(
                     'name'  => $user->getUsername(),
                     'token' => $user->getToken(),
                     'userId' => $user->getId())),

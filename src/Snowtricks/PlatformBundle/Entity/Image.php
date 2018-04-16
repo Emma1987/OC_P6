@@ -73,7 +73,7 @@ class Image
         $file->move($this->getUploadRootDir(), $name);
     }
 
-    public function getUploadDir()
+    protected function getUploadDir()
     {
         return 'uploads/tricks';
     }

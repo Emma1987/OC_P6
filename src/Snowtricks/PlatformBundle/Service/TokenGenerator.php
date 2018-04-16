@@ -16,6 +16,7 @@ class TokenGenerator
 
     /**
      * @var int
+     * 
      * @Assert\Type(type="int", message="La longueur du token doit être un nombre.")
      * @Assert\Length(max="100", maxMessage="Le token ne doit pas dépasser 100 caractères.")
      * @Assert\NotNull(message="La longueur du token ne peut être nulle.")
@@ -33,7 +34,8 @@ class TokenGenerator
 
     /**
      * Generate the token
-     * @param  int $tokenLength
+     * 
+     * @param int $tokenLength
      * @return string $token
      */
     public function generateToken($tokenLength)

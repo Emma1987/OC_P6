@@ -148,7 +148,7 @@ class Message
      *
      * @return Message
      */
-    public function setUser(\Snowtricks\PlatformBundle\Entity\User $user = null)
+    public function setUser(\Snowtricks\PlatformBundle\Entity\User $user)
     {
         $this->user = $user;
 
