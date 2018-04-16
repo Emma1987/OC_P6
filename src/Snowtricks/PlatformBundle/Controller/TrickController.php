@@ -40,9 +40,11 @@ class TrickController extends Controller
     public function indexAction()
     {
         $listTricks = $this->entityManager->getRepository(Trick::class)->findAll();
+        $nbTricks = $this->entityManager->getRepository(Trick::class)->countTricks();
 
         return $this->render('tricks/index.html.twig', array(
             'listTricks' => $listTricks,
+            'nbTricks'   => $nbTricks,
         ));
     }
 
@@ -230,7 +232,11 @@ class TrickController extends Controller
     public function deleteAction(Request $request)
     {
         $trick = $this->entityManager->getRepository(Trick::class)->findOneById($request->attributes->get('id'));
+        $messages = $this->entityManager->getRepository(Message::class)->findBy(array('trick' => $trick));
 
+        foreach ($messages as $message) {
+            $this->entityManager->remove($message);
+        }
         $this->entityManager->remove($trick);
         $this->entityManager->flush();
 
