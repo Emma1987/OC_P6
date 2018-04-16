@@ -12,8 +12,14 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  *
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="Snowtricks\PlatformBundle\Repository\UserRepository")
- * @UniqueEntity(fields="email", message="Un compte existe déjà avec cet email.", groups={"register"})
- * @UniqueEntity(fields="username", message="Ce nom d'utilisateur est déjà pris.", groups={"register"})
+ * @UniqueEntity(
+ *     fields="email", 
+ *     message="Un compte existe déjà avec cet email.", 
+ *     groups={"register"})
+ * @UniqueEntity(
+ *     fields="username", 
+ *     message="Ce nom d'utilisateur est déjà pris.", 
+ *     groups={"register"})
  */
 class User implements AdvancedUserInterface, \Serializable
 {

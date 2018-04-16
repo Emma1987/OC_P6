@@ -28,7 +28,24 @@
 {% endblock %}
 
 {% block delete %}
-    <a id="return" href="{{ path('snowtricks_view', {'slug': trick.slug}) }}" class="btn btn-light deleteButton">
+    <a id="delete" class="btn btn-light deleteButton" data-toggle="modal" data-target="#deleteConfirmation">
         <i class="fa fa-trash-o" aria-hidden="true"></i> Supprimer cette figure
     </a>
+    <!-- MODAL DELETE CONFIRM -->
+    <div class="modal fade" id="deleteConfirmation" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="myModalLabel">Confirmation</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Confirmez vous la suppression de cette figure et de ses messages ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <a class="btn btn-danger" href="{{ path('snowtricks_delete', {'id': trick.id}) }}">Supprimer</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

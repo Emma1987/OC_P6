@@ -11,6 +11,17 @@ namespace Snowtricks\PlatformBundle\Repository;
 class TrickRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
+     * Count the number of tricks save in database
+     */
+    public function countTricks()
+    {
+        $query = $this->createQueryBuilder('t')
+            ->select('COUNT(t)');
+
+        return $query->getQuery()->getSingleScalarResult();
+    }
+
+    /**
      * Request for search form
      */
     public function search($trickName, $group)

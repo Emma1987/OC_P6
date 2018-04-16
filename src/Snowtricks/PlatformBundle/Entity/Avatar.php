@@ -33,8 +33,10 @@ class Avatar
 
     /**
      * @Assert\Image(
-     *     maxSize = "1",
-     *     maxSizeMessage = "Trop grosse cette image !!!!",
+     *     maxWidth = 300,
+     *     maxHeight = 300,
+     *     maxWidthMessage = "L'image doit mesurer au maximum 300 x 300 pixels",
+     *     maxHeightMessage = "L'image doit mesurer au maximum 300 x 300 pixels",
      *     mimeTypes = {"image/png", "image/jpeg", "image/jpg"},
      *     mimeTypesMessage = "L'image doit être au format png, jpg ou jpeg.")
      */
@@ -52,7 +54,7 @@ class Avatar
         $file->move($this->getUploadRootDir(), $name);
     }
 
-    public function getUploadDir()
+    protected function getUploadDir()
     {
         return 'uploads/avatars';
     }

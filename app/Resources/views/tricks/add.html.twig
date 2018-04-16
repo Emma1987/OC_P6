@@ -41,12 +41,12 @@
                     {% block updateImage %}{% endblock %}
                     <div class="form-group row">
                         {{ form_label(trickForm.images, 'Image(s)', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
-                        {% form_theme trickForm.images '_jquery.collection.html.twig' %}
+                        {% form_theme trickForm.images 'jquery.collection.html.twig' %}
                         {{ form_widget(trickForm.images) }}
                     </div>
                     <div class="form-group row">
                         {{ form_label(trickForm.videos, 'Vidéo(s)', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
-                        {% form_theme trickForm.videos '_jquery.collection.html.twig' %}
+                        {% form_theme trickForm.videos 'jquery.collection.html.twig' %}
                         {{ form_widget(trickForm.videos) }}
                     </div>
                 </div>

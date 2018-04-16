@@ -24,7 +24,9 @@ class TrickType extends AbstractType
             ->add('name',           TextType::class, array(
                 'error_bubbling' => true))
             ->add('description',    TextareaType::class, array(
-                'error_bubbling' => true))
+                'error_bubbling' => true,
+                'attr'           => array(
+                    'rows'         => 5)))
             ->add('trickgroup',     EntityType::class, array(
                 'class'          => 'SnowtricksPlatformBundle:TrickGroup',
                 'choice_label'   => 'name',

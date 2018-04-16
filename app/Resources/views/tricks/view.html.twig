@@ -120,9 +120,9 @@
             <!-- TRICK CONTENT -->
             <div class="mt-2">
                 {% if trick.updatedAt is empty %}
-                    <p class="text-right"><em><i class="fa fa-clock-o fa-fw"></i> Publié le {{ trick.publishedAt|date("m/d/Y", "Europe/Paris") }}</em></p>
+                    <p class="text-right"><em><i class="fa fa-clock-o fa-fw"></i> Publié le {{ trick.publishedAt|date("d/m/Y", "Europe/Paris") }}</em></p>
                 {% else %}
-                    <pclass="text-right"><em><i class="fa fa-clock-o fa-fw"></i> Mis à jour le {{ trick.updatedAt|date("m/d/Y", "Europe/Paris") }}</em></p>
+                    <p class="text-right"><em><i class="fa fa-clock-o fa-fw"></i> Mis à jour le {{ trick.updatedAt|date("d/m/Y", "Europe/Paris") }}</em></p>
                 {% endif %}
                 <p class="mt-1 mb-3"><em>Cette figure appartient au groupe '{{ trick.trickgroup.name }}'</em></p>
                 <h2>Description :</h2>
@@ -152,10 +152,10 @@
             {% endif %}
 
             <h3 class="text-center">Fil de discussion</h3>
-            {% if trick.messages is empty %}
+            {% if messages is empty %}
                 <p>Aucun commentaire n'a encore été posté, soyez le premier !</p>
             {% else %}
-                {% for message in trick.messages %}
+                {% for message in messages %}
                     <div class="row">
                         <div class="avatarChat col-2 col-sm-1">
                             {% if message.user.avatar is not empty %}

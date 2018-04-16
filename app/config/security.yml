@@ -27,7 +27,7 @@ security:
             form_login:
                 login_path:          /login
                 check_path:          /login
-                default_target_path: /user/account
+                csrf_token_generator: security.csrf.token_manager
             logout:
                 path: /logout
             remember_me:

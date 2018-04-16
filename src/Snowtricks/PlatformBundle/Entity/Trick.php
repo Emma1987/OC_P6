@@ -4,6 +4,7 @@ namespace Snowtricks\PlatformBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -11,6 +12,9 @@ use Doctrine\Common\Collections\ArrayCollection;
  *
  * @ORM\Table(name="trick")
  * @ORM\Entity(repositoryClass="Snowtricks\PlatformBundle\Repository\TrickRepository")
+ * @UniqueEntity(
+ *     fields="name", 
+ *     message="Cette figure existe déjà.")
  */
 class Trick
 {
@@ -38,12 +42,10 @@ class Trick
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=255)
+     * @ORM\Column(name="description", type="text")
      * @Assert\Length(
      *     min = 10, 
-     *     minMessage = "La description doit contenir au minimum 10 caractères", 
-     *     max = 255, 
-     *     maxMessage = "La description doit contenir au maximum 255 caractères")
+     *     minMessage = "La description doit contenir au minimum 10 caractères")
      */
     private $description;
 
@@ -85,22 +87,15 @@ class Trick
 
     /**
      * @var Video[]|ArrayCollection
-     * @ORM\ManyToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Video", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Video", mappedBy="trick", cascade={"persist", "remove"})
      * @Assert\Valid()
      */
     private $videos;
-
-    /**
-     * @var Message[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity="Snowtricks\PlatformBundle\Entity\Message", mappedBy="trick", cascade={"persist", "remove"})
-     */
-    private $messages;
 
     public function __construct()
     {
         $this->publishedAt = new \Datetime();
         $this->images = new ArrayCollection();
-        $this->messages = new ArrayCollection();
         $this->videos = new ArrayCollection();
     }
 
@@ -313,42 +308,6 @@ class Trick
     }
 
     /**
-     * Add message.
-     *
-     * @param \Snowtricks\PlatformBundle\Entity\Message $message
-     *
-     * @return Trick
-     */
-    public function addMessage(\Snowtricks\PlatformBundle\Entity\Message $message)
-    {
-        $this->messages[] = $message;
-
-        return $this;
-    }
-
-    /**
-     * Remove message.
-     *
-     * @param \Snowtricks\PlatformBundle\Entity\Message $message
-     *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeMessage(\Snowtricks\PlatformBundle\Entity\Message $message)
-    {
-        return $this->messages->removeElement($message);
-    }
-
-    /**
-     * Get messages.
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getMessages()
-    {
-        return $this->messages;
-    }
-
-    /**
      * Add video.
      *
      * @param \Snowtricks\PlatformBundle\Entity\Video $video
@@ -358,6 +317,7 @@ class Trick
     public function addVideo(\Snowtricks\PlatformBundle\Entity\Video $video)
     {
         $this->videos[] = $video;
+        $video->setTrick($this);
 
         return $this;
     }
