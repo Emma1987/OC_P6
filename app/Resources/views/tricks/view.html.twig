@@ -53,7 +53,6 @@
                     {% for image in trick.images|slice(1) %}
                         <div class="col-sm-3 col-xs-6 updateImage">
                             <img src="{{ asset(image.url) }}" alt="">
-                            <a href="{{ path('snowtricks_image_remove', {'id': image.id}) }}"><em>Supprimer cette image</em></a>
                         </div>
                     {% endfor %}
                 {% endif %}
@@ -61,7 +60,6 @@
                     {% for video in trick.videos %}
                         <div class="col pt-1">
                             <iframe width="200" height="135" src="{{ video.iframeUrl }}" frameborder="0" allow=" encrypted-media" allowfullscreen></iframe>
-                            <p><a href="{{ path('snowtricks_video_remove', {'id': video.id}) }}"><em>Supprimer cette vidéo</em></a></p>
                         </div>
                     {% endfor %}
                 {% endif %}
