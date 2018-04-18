@@ -92,6 +92,13 @@ class Trick
      */
     private $videos;
 
+    /**
+     * @var User
+     * @ORM\ManyToOne(targetEntity="Snowtricks\PlatformBundle\Entity\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
     public function __construct()
     {
         $this->publishedAt = new \Datetime();
@@ -342,5 +349,29 @@ class Trick
     public function getVideos()
     {
         return $this->videos;
+    }
+
+    /**
+     * Set user.
+     *
+     * @param \Snowtricks\PlatformBundle\Entity\User|null $user
+     *
+     * @return Message
+     */
+    public function setUser(\Snowtricks\PlatformBundle\Entity\User $user)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user.
+     *
+     * @return \Snowtricks\PlatformBundle\Entity\User|null
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }
