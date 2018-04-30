@@ -28,7 +28,7 @@ class Video
      *
      * @ORM\Column(name="url", type="string", length=255)
      * @Assert\Regex(
-     *     pattern="#^(http|https)://(youtu.be/|www.dailymotion.com/).*#",
+     *     pattern="#^(http|https)://(youtu.be/|dai.ly/).*#",
      *     match=true,
      *     message="L'url ne semble pas être une URL de partage provenant de Youtube ou Dailymotion.")
      */

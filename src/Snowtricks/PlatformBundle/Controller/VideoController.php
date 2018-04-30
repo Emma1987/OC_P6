@@ -1,0 +1,42 @@
+<?php
+namespace Snowtricks\PlatformBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Snowtricks\PlatformBundle\Entity\Video;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+
+/**
+ * ImageController
+ */
+class VideoController extends Controller
+{
+    /**
+     * Remove a video when updating trick
+     * 
+     * @param Request $request
+     *
+     * @Route(
+     *     "/video/remove/{id}", 
+     *     name="snowtricks_video_remove", 
+     *     requirements={"id"="\d+"})
+     *
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     */
+    public function removeAction(Request $request)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $video = $entityManager->getRepository(Video::class)->findOneById($request->attributes->get('id'));
+
+        $trick = $video->getTrick();
+
+        $entityManager->remove($video);
+        $entityManager->flush();
+
+        $request->getSession()->getFlashBag()->add('notice', 'L\'image a bien été supprimée.');
+        return $this->redirectToRoute('snowtricks_update', array(
+            'slug' => $trick->getSlug()
+        ));
+    }
+}

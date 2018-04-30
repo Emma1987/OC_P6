@@ -38,7 +38,7 @@
                     <a class="btn btn-info updateMediasAction w-100">Mettre à jour les images et vidéos</a>
                 </div>
                 <div class="list-group-item updateMediasBlock mb-2">
-                    {% block updateImage %}{% endblock %}
+                    {% block updateMedias %}
                     <div class="form-group row">
                         {{ form_label(trickForm.images, 'Image(s)', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
                         {% form_theme trickForm.images 'jquery.collection.html.twig' %}
@@ -49,6 +49,7 @@
                         {% form_theme trickForm.videos 'jquery.collection.html.twig' %}
                         {{ form_widget(trickForm.videos) }}
                     </div>
+                    {% endblock %}
                 </div>
                 <div class="validationButtons text-center">
                     {% block return %}{% endblock %}

@@ -48,29 +48,21 @@
             </div>
 
             <!-- OTHER MEDIAS -->
-            <div class="row otherMedias">
-                <div class="otherImages col-sm-6">
-                    {% if trick.images is not empty %}
-                        <div class="row">
-                            {% for image in trick.images|slice(1, 2) %}
-                                <div class="col-sm-6 col-xs-4 pt-1">
-                                    <img src="{{ asset(image.url) }}" alt="{{ image.alt }}" />
-                                </div>
-                            {% endfor %}
-                        </div>  
-                    {% endif %}
-                </div>
-                <div class="videos col-sm-6">
-                    {% if trick.videos is not empty %}
-                        <div class="row">
-                            {% for video in trick.videos|slice(0,2) %}
-                                <div class="col pt-1">
-                                    <iframe width="200" height="110" src="{{ video.iframeUrl }}" frameborder="0" allow=" encrypted-media" allowfullscreen></iframe>
-                                </div>
-                            {% endfor %}
+            <div class="row otherMedias pt-2">
+                {% if trick.images is not empty %}
+                    {% for image in trick.images|slice(1) %}
+                        <div class="col-sm-3 col-xs-6 updateImage">
+                            <img src="{{ asset(image.url) }}" alt="">
                         </div>
-                    {% endif %}
-                </div>
+                    {% endfor %}
+                {% endif %}
+                {% if trick.videos is not empty %}
+                    {% for video in trick.videos %}
+                        <div class="col pt-1">
+                            <iframe width="200" height="135" src="{{ video.iframeUrl }}" frameborder="0" allow=" encrypted-media" allowfullscreen></iframe>
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </div>
 
             <!-- VIEW ALL MODAL -->

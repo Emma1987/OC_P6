@@ -144,6 +144,7 @@ class TrickController extends Controller
             $this->entityManager->persist($trick);
             $slug = $trick->createSlug($trick->getName());
             $trick->setSlug($slug);
+            $trick->setUser($this->getUser());
 
             $images = $trick->getImages();
             foreach ($images as $image) {
@@ -191,6 +192,7 @@ class TrickController extends Controller
         if ($trickForm->isSubmitted() && $trickForm->isValid()) {
             $slug = $trick->createSlug($trick->getName());
             $trick->setSlug($slug);
+            $trick->setUser($this->getUser());
 
             $images = $trick->getImages();
             foreach ($images as $image) {

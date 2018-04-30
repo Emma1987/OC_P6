@@ -4,21 +4,52 @@
     <h2 class="text-center"><a href="{{ path('snowtricks_view', {'slug': trick.slug}) }}">{{ trick.name|upper }}</a></h2>
 {% endblock %}
 
-{% block updateImage %}
-    {% if trick.images is not empty %}
-        <div class="row justify-content-end">
-            <div class="col-sm-8">
-                <div class="row">
-                    {% for image in trick.images %}
-                        <div class="col-sm-3 col-xs-6 updateImage">
-                            <img src="{{ asset(image.url) }}" alt="">
-                            <a href="{{ path('snowtricks_image_remove', {'id': image.id}) }}"><em>Supprimer cette image</em></a>
-                        </div>
-                    {% endfor %}
+{% block updateMedias %}
+    {# Remove media #}
+    <div class="row pb-2">
+        {% if trick.images is not empty %}
+            {% for image in trick.images %}
+                <div class="col-sm-3 col-xs-6 updateImage">
+                    <img src="{{ asset(image.url) }}" alt="">
+                    <a href="{{ path('snowtricks_image_remove', {'id': image.id}) }}"><em>Supprimer cette image</em></a>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if trick.videos is not empty %}
+            {% for video in trick.videos %}
+                <div class="col pt-1">
+                    <iframe width="200" height="135" src="{{ video.iframeUrl }}" frameborder="0" allow=" encrypted-media" allowfullscreen></iframe>
+                    <p><a href="{{ path('snowtricks_video_remove', {'id': video.id}) }}"><em>Supprimer cette vidéo</em></a></p>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    {# Add new image #}
+    <div class="list-group" role="tablist">
+        <em class="pb-2"><a data-toggle="list" href="#image" role="tab">Ajoutez</a> une image supplémentaire</em>
+        <div class="tab-content">
+            <div class="tab-pane fade" id="image" role="tabpanel" aria-labelledby="avatar">
+                <div class="form-group row">
+                    {{ form_label(trickForm.images, 'Image(s)', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
+                    {% form_theme trickForm.images 'jquery.collection.html.twig' %}
+                    {{ form_widget(trickForm.images) }}
                 </div>
             </div>
         </div>
-    {% endif %}
+    </div>
+    {# Add new video #}
+    <div class="list-group" role="tablist">
+        <em class="pb-2"><a data-toggle="list" href="#video" role="tab">Ajoutez</a> une vidéo supplémentaire</em>
+        <div class="tab-content">
+            <div class="tab-pane fade" id="video" role="tabpanel" aria-labelledby="avatar">
+                <div class="form-group row">
+                    {{ form_label(trickForm.videos, 'Vidéo(s)', {'label_attr': {'class': 'col-sm-4 col-xs-12'}}) }}
+                    {% form_theme trickForm.videos 'jquery.collection.html.twig' %}
+                    {{ form_widget(trickForm.videos, {'attr': {'value': ""}}) }}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block return %}
