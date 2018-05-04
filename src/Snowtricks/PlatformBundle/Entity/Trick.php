@@ -68,7 +68,7 @@ class Trick
     /**
      * @var string
      *
-     * @ORM\Column(name="slug", type="string", length=255, unique=true)
+     * @ORM\Column(name="slug", type="string", length=100, unique=true)
      */
     private $slug;
 
